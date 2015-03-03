@@ -3,7 +3,7 @@
 * Plugin Name: Dashboard access log monitor
 * Plugin URI: https://github.com/Seravo/wp-dashboard-log-monitor
 * Description: Take a sneak peek on your access logs from the wordpress dashboard.
-* Author: Tari / Seravo Oy
+* Author: Tari Zahabi / Seravo Oy
 * Author URI: http://seravo.fi
 * Version: 1.0.3
 * License: GPLv2 or later
@@ -20,6 +20,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 
 /**
+ * Load Chart.js
+*/
+
+function wpdrs_load_scripts() {
+//wp_register_script('chartjs', plugins_url('/script/Chart.js', __FILE__), array('chartjs'),'1.0.1', true);
+
+  wp_register_script('chartjs', plugins_url('/script/Chart.js', __FILE__));
+  wp_register_script('drawjs', plugins_url('/script/draw.js', __FILE__));
+  wp_enqueue_script('chartjs');
+  wp_enqueue_script('drawjs');
+
+}
+
+
+add_action( 'admin_enqueue_scripts', 'wpdrs_load_scripts' );  
+
+/**
  * Add a widget to the dashboard.
  *
  * This function is hooked into the 'wp_dashboard_setup' action below.
@@ -28,19 +45,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 function example_add_dashboard_widgets() {
 
 	wp_add_dashboard_widget(
-                 'example_dashboard_widget',         // Widget slug.
-                 'Example Dashboard Widget',         // Title.
-                 'example_dashboard_widget_function' // Display function.
+                 'wp-dashboard-request-stats',         // Widget slug.
+                 'WP Dashboard Request Stats',         // Title.
+                 'wpdrs_dashboard_widget_function' // Display function.
         );	
 }
-add_action( 'wp_dashboard_setup', 'example_add_dashboard_widgets' );
+
+ add_action( 'wp_dashboard_setup', 'example_add_dashboard_widgets' );
 
 /**
  * Create the function to output the contents of our Dashboard Widget.
  */
-function example_dashboard_widget_function() {
+function wpdrs_dashboard_widget_function() {
 
-	// Display whatever it is you want to show.
-	echo "Hello World, I'm a great Dashboard Widget";
+	// Display canvas.
+	echo '<canvas id="myChart" width="450" height="400"></canvas>';
+  
 }
+
 ?>
