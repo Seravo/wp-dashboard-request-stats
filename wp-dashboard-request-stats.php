@@ -20,21 +20,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 
 /**
- * Load Chart.js
-*/
+ * Initialize the plugin
+ */
 
-function wpdrs_load_scripts() {
-//wp_register_script('chartjs', plugins_url('/script/Chart.js', __FILE__), array('chartjs'),'1.0.1', true);
+function wpdrs_init() {
+  //wp_register_script('chartjs', plugins_url('/script/Chart.js', __FILE__), array('chartjs'),'1.0.1', true);
 
-  wp_register_script('chartjs', plugins_url('/script/Chart.js', __FILE__));
-  wp_register_script('drawjs', plugins_url('/script/draw.js', __FILE__));
-  wp_enqueue_script('chartjs');
-  wp_enqueue_script('drawjs');
+  //styles
+  wp_register_style( 'stylesheet', plugins_url('style.css', __FILE__) );
+  wp_enqueue_style( 'stylesheet');
 
+  //external scripts
+  wp_register_script( 'chartjs', plugins_url( '/script/Chart.js' , __FILE__) );
+  wp_register_script( 'drawjs', plugins_url( '/script/draw.js' , __FILE__) );
+  wp_enqueue_script( 'chartjs' );
+  wp_enqueue_script( 'drawjs' );
+  wp_localize_script( 'ajax-script', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' )) );
 }
-
-
-add_action( 'admin_enqueue_scripts', 'wpdrs_load_scripts' );  
+ 
 
 /**
  * Add a widget to the dashboard.
@@ -42,8 +45,7 @@ add_action( 'admin_enqueue_scripts', 'wpdrs_load_scripts' );
  * This function is hooked into the 'wp_dashboard_setup' action below.
  */
 
-function example_add_dashboard_widgets() {
-
+function wpdrs_add_dashboard_widgets() {
 	wp_add_dashboard_widget(
                  'wp-dashboard-request-stats',         // Widget slug.
                  'WP Dashboard Request Stats',         // Title.
@@ -51,16 +53,34 @@ function example_add_dashboard_widgets() {
         );	
 }
 
- add_action( 'wp_dashboard_setup', 'example_add_dashboard_widgets' );
+
 
 /**
  * Create the function to output the contents of our Dashboard Widget.
  */
+
 function wpdrs_dashboard_widget_function() {
 
 	// Display canvas.
 	echo '<canvas id="myChart" width="450" height="400"></canvas>';
-  
+  echo '<div id="chart-legend" ></div>';
 }
+
+/**
+ * Fetch the chart data
+ *
+ */ 
+
+function get_chart_data_callback(){
+
+  echo '[90, 55, 10, 81, 10, 10, 60]';
+  wp_die(); // this is required to terminate immediately and return a proper response
+
+}
+
+
+add_action( 'wp_dashboard_setup', 'wpdrs_add_dashboard_widgets' );
+add_action( 'admin_enqueue_scripts', 'wpdrs_init' );
+add_action( 'wp_ajax_get_chart_data', 'get_chart_data_callback' );
 
 ?>
