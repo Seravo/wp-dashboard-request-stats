@@ -11,13 +11,8 @@ jQuery(document).ready(function($){
   
   var chartValue;
   jQuery.get(ajaxurl, ajaxData, function(response) {
-			//alert(response);
-      chartValue = response;
+    alert(response);
   });
-
-
-
-
 
   //chart options
   var chartData = {
@@ -31,7 +26,8 @@ jQuery(document).ready(function($){
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(220,220,220,1)",
-            data: chartValue
+            data: [30, 50, 20, 10, 5, 300, 1]
+
         },
         {
             label: "ABC",
@@ -45,7 +41,6 @@ jQuery(document).ready(function($){
         }
     ]
   };
-
 
   var myLineChart = new Chart(ctx).Line(chartData);
   var legend = myLineChart.generateLegend();

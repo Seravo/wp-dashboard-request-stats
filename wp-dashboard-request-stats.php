@@ -5,7 +5,7 @@
 * Description: Take a sneak peek on your access logs from the wordpress dashboard.
 * Author: Tari Zahabi / Seravo Oy
 * Author URI: http://seravo.fi
-* Version: 1.0.3
+* Version: 0.0.1
 * License: GPLv2 or later
 */
 /** Copyright 2014 Seravo Oy
@@ -18,6 +18,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
+define('__ROOT__', dirname(__FILE__));
+
+require_once __ROOT__."/log-parser/src/Kassner/LogParser/FormatException.php";
+require_once __ROOT__."/log-parser/src/Kassner/LogParser/LogParser.php";
+//log dir
+$path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
+$default_access_log_format = '%h %a %{User-Identifier}i %u %t "%r" %>s %b "%{Referer}i" "%{User-Agent}i" %{Cache-Status}i %{Powered-By}i %T';
+
 
 /**
  * Initialize the plugin
@@ -25,6 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 function wpdrs_init() {
   //wp_register_script('chartjs', plugins_url('/script/Chart.js', __FILE__), array('chartjs'),'1.0.1', true);
+
 
   //styles
   wp_register_style( 'stylesheet', plugins_url('style.css', __FILE__) );
@@ -68,13 +77,22 @@ function wpdrs_dashboard_widget_function() {
 
 /**
  * Fetch the chart data
- *
  */ 
 
-function get_chart_data_callback(){
+function get_chart_data_callback() {
+//get_transient
+  $parser = new \Kassner\LogParser\LogParser();
+  $parser->setFormat( $default_access_log_format );
+  $lines = file( $path );
+  $total_request_count = 0;
+  foreach ($lines as $line) {
 
-  echo '[90, 55, 10, 81, 10, 10, 60]';
-  wp_die(); // this is required to terminate immediately and return a proper response
+    ++$total_request_count;
+    $entry = $parser->parse($line);
+
+  }
+  echo $total_request_count;
+  wp_die();
 
 }
 

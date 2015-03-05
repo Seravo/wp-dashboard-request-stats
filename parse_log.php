@@ -1,5 +1,5 @@
 <?php
-
+/*
 class day_data {
     public $date = NULL;
     public $request_count = 0;
@@ -16,7 +16,7 @@ $total_request_count = 0; //one request per line
 $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
 $resp_exp = '#$[0-9].[0-9]{3}#';
 // opens the content of a file into an array
-$lines = file('nginx-access.log');
+$lines = file('total-access.log');
 $matches;
 $day = new day_data;
 $days_array = array();
@@ -44,7 +44,7 @@ foreach ( $lines as $line ){
 
     if ( preg_match( $resp_exp , $line )){
       $day->get_count++ ;
-    } elseif (preg_match( "/POST/" , $line )){
+    } elseif (preg_match( "/MISS/" , $line )){
       $day->post_count++; 
     }
   
@@ -62,5 +62,22 @@ foreach ( $days_array as $data ){
   echo("Get Requests: : " . $data->get_count . "\n");
   echo("Post Requests: : " . $data->post_count . "\n");
 }
+*/
+/*
+define('__ROOT__', dirname(__FILE__));
+
+require_once __ROOT__."/log-parser/src/Kassner/LogParser/FormatException.php";
+require_once __ROOT__."/log-parser/src/Kassner/LogParser/LogParser.php";
+
+$default_access_log_format = '%h %a %{User-Identifier}i %u %t "%r" %>s %b "%{Referer}i" "%{User-Agent}i" %{Cache-Status}i %{Powered-By}i %T';
+$path = 'total-access.log';
+$parser = new \Kassner\LogParser\LogParser();
+$parser->setFormat($default_access_log_format);
+$lines = file( $path );
+  foreach ($lines as $line) {
+    $entry = $parser->parse($line);
+    echo $entry->host;
+}
+*/
 
 ?>
