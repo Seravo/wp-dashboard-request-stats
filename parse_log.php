@@ -63,11 +63,11 @@ foreach ( $days_array as $data ){
   echo("Post Requests: : " . $data->post_count . "\n");
 }
 */
-/*
+
 define('__ROOT__', dirname(__FILE__));
 
-require_once __ROOT__."/log-parser/src/Kassner/LogParser/FormatException.php";
-require_once __ROOT__."/log-parser/src/Kassner/LogParser/LogParser.php";
+require_once __ROOT__."/include/FormatException.php";
+require_once __ROOT__."/include/LogParser.php";
 
 $default_access_log_format = '%h %a %{User-Identifier}i %u %t "%r" %>s %b "%{Referer}i" "%{User-Agent}i" %{Cache-Status}i %{Powered-By}i %T';
 $path = 'total-access.log';
@@ -78,6 +78,6 @@ $lines = file( $path );
     $entry = $parser->parse($line);
     echo $entry->host;
 }
-*/
+
 
 ?>
