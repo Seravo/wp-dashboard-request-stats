@@ -62,8 +62,6 @@ function wpdrs_add_dashboard_widgets() {
         );	
 }
 
-
-
 /**
  * Create the function to output the contents of our Dashboard Widget.
  */
@@ -74,55 +72,16 @@ function wpdrs_dashboard_widget_function() {
   //echo '<div id="chart-legend" ></div>';
 }
 
-/**
- * Fetch the chart data
- */ 
-
-function get_chart_data_callback() {
-  //get_transient
-  //probably shouldn't be defined here, but for now it is
-/*class day_data {
-    public $date = NULL;
-    public $request_count = 0;
-    public $post_count = 0;
-    public $get_count= 0;
-  }
-
-  $day = new day_data;
-  $days_array = array();
-  $parser = new \Kassner\LogParser\LogParser();
-  $parser->setFormat( $default_access_log_format );
-  $lines = file( '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log' );
-  $total_request_count = 0;
-  foreach ( $lines as $line ) {
-
-    $total_request_count++;
-
-    $entry = $parser->parse($line);
-
-  }*/ 
-  
-  class day_data {
-    public $date = NULL;
-    public $request_count = 0;
-    //public $post_count = 0;
-    //public $get_count= 0;
-
-  }
-
-  $total_request_count = 0; //one request per line
+function parse_log_file( $path ){
   $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
-  $resp_exp = '#$[0-9].[0-9]{3}#';
-  // opens the content of a file into an array
-  $lines = file( '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log' );
-  $matches;
+  $lines = file( $path );
   $day = new day_data;
   $days_array = array();
+  $matches;
 
   foreach ( $lines as $line ){
-    //find and extract timestamp
-    if (preg_match( $time_exp, $line, $matches )){
-      $total_request_count++;
+  //find and extract timestamp
+  if (preg_match( $time_exp, $line, $matches )){
 
     //this is done only once to set the previous
     if( is_null($day->date) ){
@@ -144,18 +103,83 @@ function get_chart_data_callback() {
     } elseif (preg_match( "/MISS/" , $line )){
       $day->post_count++; 
     }*/
-
+  
   }
-}
+  }
 
   // push last into array
   $days_array[] = $day;
 
-  echo (json_encode($days_array));
+  return $days_array;
+}
+
+
+/**
+ * Fetch the chart data
+ */ 
+
+function get_chart_data_callback() {
+  //get_transient
+  //probably shouldn't be defined here, but for now it is
+/*
+
+  $day = new day_data;
+  $days_array = array();
+  $parser = new \Kassner\LogParser\LogParser();
+  $parser->setFormat( $default_access_log_format );
+  $lines = file( '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log' );
+  $total_request_count = 0;
+  foreach ( $lines as $line ) {
+
+    $total_request_count++;
+
+    $entry = $parser->parse($line);
+
+  }*/ 
+
+  //probably shouldn't be defined here, but for now it is
+  class day_data {
+    public $date = NULL;
+    public $request_count = 0;
+    //public $post_count = 0;
+    //public $get_count= 0;
+
+  }
+
+
+  $path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
+  //$path = 'total-access.log';
+  // combine logfiles
+
+  $day_array1 = parse_log_file( $path );
+  $day_array2 = array();
+  $day_total;
+  $d_count = count( $day_array1 );
+  //if there's less than $d_amount days worth of data
+  $d_amount = 7;
+  if ( $d_count <= $d_amount ){
+
+    //count how many days are taken from the previous log
+    $x = $d_amount - $d_count;
+    $day_array2 = parse_log_file( $path . '.1' );
+
+    for($i = 0; $i < $x ; $i++){
+      array_shift( $day_array2 );
+    }
+    $day_total = array_merge( $day_array1, $day_array2 );
+  }
+
+  else{
+
+    $day_total = $day_array1;
+
+  }
+
+  
+  echo ( json_encode( $day_total ) );
   wp_die();
 
 }
-
 
 add_action( 'wp_dashboard_setup', 'wpdrs_add_dashboard_widgets' );
 add_action( 'admin_enqueue_scripts', 'wpdrs_init' );
