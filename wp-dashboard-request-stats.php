@@ -146,8 +146,8 @@ function get_chart_data_callback() {
 
   }
 
-
-  $path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
+  $log_location = dirname( ini_get( 'error_log' ) );
+  $path = "$log_location/total-access.log";
   //$path = 'total-access.log';
   // combine logfiles
 
