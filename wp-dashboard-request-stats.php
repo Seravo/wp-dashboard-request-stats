@@ -151,11 +151,11 @@ function get_chart_data_callback() {
 
   }*/ 
 
-  $log_location = dirname( ini_get( 'error_log' ) );
-  $path = "$log_location/total-access.log";
+  //$log_location = dirname( ini_get( 'error_log' ) );
+  //$path = "$log_location/total-access.log";
   //$path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/empty.log';
   
-  //$path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
+  $path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
   $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
   $unit_data = array();
 
@@ -164,7 +164,6 @@ function get_chart_data_callback() {
   
   //if *.log.1 exist, there's always enough data to create a nice chart
   if ( file_exists( $path . '.1' ) ){
-  
     $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
     $unit_data = parse_log_file( $path, $time_exp );
     $real_size = count( $unit_data );
@@ -174,10 +173,10 @@ function get_chart_data_callback() {
       $unit_data = array_reverse( $unit_data );
       for( $i = 0; $i <= ( $desired_size - $real_size ); $i++ ){
           $value = array_pop( $temp );
-          if(!is_null($value)){
-          $unit_data[] = $value;
-          }
 
+          if(!is_null($value)){
+            $unit_data[] = $value;
+          }
       }
       $unit_data = array_reverse( $unit_data );
    }
@@ -192,6 +191,7 @@ function get_chart_data_callback() {
       //this is done only when a) *log.1 doesn't exist and b)when
       //*.log contains only the data for one day or less
       if( $real_size < 2 ){
+        //regex for hours
         $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}:[0-2][0-9]#';
         $unit_data = parse_log_file( $path, $time_exp );
       }
