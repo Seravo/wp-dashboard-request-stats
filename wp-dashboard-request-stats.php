@@ -20,12 +20,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 define('__ROOT__', dirname(__FILE__));
 
-require_once __ROOT__."/include/FormatException.php";
-require_once __ROOT__."/include/LogParser.php";
+//require_once __ROOT__."/include/FormatException.php";
+//require_once __ROOT__."/include/LogParser.php";
 //log dir
-$log_path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
-$default_access_log_format = '%h %a %{User-Identifier}i %u %t "%r" %>s %b "%{Referer}i" "%{User-Agent}i" %{Cache-Status}i %{Powered-By}i %T';
-
+//$log_path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
+/*$default_access_log_format = '%h %a %{User-Identifier}i %u %t "%r" %>s %b "%{Referer}i" "%{User-Agent}i" %{Cache-Status}i %{Powered-By}i %T';
+*/
 /**
  * Class to store parsed data
  */
@@ -151,17 +151,17 @@ function get_chart_data_callback() {
 
   }*/ 
 
-  //$log_location = dirname( ini_get( 'error_log' ) );
-  //$path = "$log_location/total-access.log";
+  $log_location = dirname( ini_get( 'error_log' ) );
+  $path = "$log_location/total-access.log";
   //$path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/empty.log';
   
-  $path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
+  //$path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
   $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
   $unit_data = array();
 
   //desired length of the array,
   $desired_size = 7;
-
+  
   //if *.log.1 exist, there's always enough data to create a nice chart
   if ( file_exists( $path . '.1' ) ){
   
@@ -171,12 +171,16 @@ function get_chart_data_callback() {
     if( $real_size < $desired_size ){
       $temp = parse_log_file( $path . '.1', $time_exp );
       //might require some optimization later on
+      $unit_data = array_reverse( $unit_data );
       for( $i = 0; $i <= ( $desired_size - $real_size ); $i++ ){
-        $unit_data = array_reverse( $unit_data );
-        $unit_data[] = array_pop( $temp );
-        $unit_data = array_reverse( $unit_data );
+          $value = array_pop( $temp );
+          if(!is_null($value)){
+          $unit_data[] = $value;
+          }
+
       }
-    }
+      $unit_data = array_reverse( $unit_data );
+   }
   }
   //if *.log.1 doesn't exist, we have to be sure there's enough data
   //to draw the chart
