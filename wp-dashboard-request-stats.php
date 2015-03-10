@@ -26,14 +26,23 @@ require_once __ROOT__."/include/LogParser.php";
 $log_path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
 $default_access_log_format = '%h %a %{User-Identifier}i %u %t "%r" %>s %b "%{Referer}i" "%{User-Agent}i" %{Cache-Status}i %{Powered-By}i %T';
 
+/**
+ * Class to store parsed data
+ */
+class time_data {
+    public $time = NULL;
+    public $request_count = 0;
+    //public $post_count = 0;
+    //public $get_count= 0;
+}
+
+
 
 /**
  * Initialize the plugin
  */
-
 function wpdrs_init() {
   //wp_register_script('chartjs', plugins_url('/script/Chart.js', __FILE__), array('chartjs'),'1.0.1', true);
-
 
   //styles
   wp_register_style( 'stylesheet', plugins_url('style.css', __FILE__) );
@@ -46,14 +55,12 @@ function wpdrs_init() {
   wp_enqueue_script( 'drawjs' );
   wp_localize_script( 'ajax-script', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' )) );
 }
- 
+
 
 /**
  * Add a widget to the dashboard.
- *
  * This function is hooked into the 'wp_dashboard_setup' action below.
  */
-
 function wpdrs_add_dashboard_widgets() {
 	wp_add_dashboard_widget(
                  'wp-dashboard-request-stats',         // Widget slug.
@@ -62,41 +69,49 @@ function wpdrs_add_dashboard_widgets() {
         );	
 }
 
+
 /**
  * Create the function to output the contents of our Dashboard Widget.
  */
-
 function wpdrs_dashboard_widget_function() {
 	// Display canvas.
 	echo '<canvas id="myChart" width="450" height="400"></canvas>';
   //echo '<div id="chart-legend" ></div>';
 }
 
-function parse_log_file( $path ){
-  $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
+
+/**
+ * Parse a logfile and return a array of day_data objects
+ */
+function parse_log_file( $path , $regexp ){
+
   $lines = file( $path );
-  $day = new day_data;
-  $days_array = array();
+  if($lines==false){
+    return false;
+  } 
+
+  $unit = new time_data;
+  $time_array = array();
   $matches;
 
   foreach ( $lines as $line ){
   //find and extract timestamp
-  if (preg_match( $time_exp, $line, $matches )){
+  if (preg_match( $regexp, $line, $matches )){
 
     //this is done only once to set the previous
-    if( is_null($day->date) ){
-      $day->date = $matches[0];
+    if( is_null($unit->time) ){
+      $unit->time = $matches[0];
 
     }
     //if date has changed, write to new date object
-    if( $day->date != $matches[0] ){
+    if( $unit->time != $matches[0] ){
       // push old into array
-      $days_array[] = $day;
-      $day = new day_data;
-      $day->date = $matches[0];
+      $time_array[] = $unit;
+      $unit = new time_data;
+      $unit->time = $matches[0];
     }
 
-    $day->request_count++;
+    $unit->request_count++;
 
     /*if ( preg_match( $resp_exp , $line )){
       $day->get_count++ ;
@@ -108,20 +123,19 @@ function parse_log_file( $path ){
   }
 
   // push last into array
-  $days_array[] = $day;
 
-  return $days_array;
+  $time_array[] = $unit;
+  return $time_array;
 }
 
 
 /**
  * Fetch the chart data
  */ 
-
 function get_chart_data_callback() {
+
   //get_transient
-  //probably shouldn't be defined here, but for now it is
-/*
+  /*
 
   $day = new day_data;
   $days_array = array();
@@ -137,46 +151,50 @@ function get_chart_data_callback() {
 
   }*/ 
 
-  //probably shouldn't be defined here, but for now it is
-  class day_data {
-    public $date = NULL;
-    public $request_count = 0;
-    //public $post_count = 0;
-    //public $get_count= 0;
-
-  }
-
-  $log_location = dirname( ini_get( 'error_log' ) );
-  $path = "$log_location/total-access.log";
-  //$path = 'total-access.log';
-  // combine logfiles
-
-  $day_array1 = parse_log_file( $path );
-  $day_array2 = array();
-  $day_total;
-  $d_count = count( $day_array1 );
-  //if there's less than $d_amount days worth of data
-  $d_amount = 7;
-  if ( $d_count <= $d_amount ){
-
-    //count how many days are taken from the previous log
-    $x = $d_amount - $d_count;
-    $day_array2 = parse_log_file( $path . '.1' );
-
-    for($i = 0; $i < $x ; $i++){
-      array_shift( $day_array2 );
-    }
-    $day_total = array_merge( $day_array1, $day_array2 );
-  }
-
-  else{
-
-    $day_total = $day_array1;
-
-  }
-
+  //$log_location = dirname( ini_get( 'error_log' ) );
+  //$path = "$log_location/total-access.log";
+  //$path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/empty.log';
   
-  echo ( json_encode( $day_total ) );
+  $path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
+  $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
+  $unit_data = array();
+
+  //desired length of the array,
+  $desired_size = 7;
+
+  //if *.log.1 exist, there's always enough data to create a nice chart
+  if ( file_exists( $path . '.1' ) ){
+  
+    $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
+    $unit_data = parse_log_file( $path, $time_exp );
+    $real_size = count( $unit_data );
+    if( $real_size < $desired_size ){
+      $temp = parse_log_file( $path . '.1', $time_exp );
+      //might require some optimization later on
+      for( $i = 0; $i <= ( $desired_size - $real_size ); $i++ ){
+        $unit_data = array_reverse( $unit_data );
+        $unit_data[] = array_pop( $temp );
+        $unit_data = array_reverse( $unit_data );
+      }
+    }
+  }
+  //if *.log.1 doesn't exist, we have to be sure there's enough data
+  //to draw the chart
+  else{
+    $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
+    $unit_data = parse_log_file( $path, $time_exp );
+    $real_size = count( $unit_data );
+    if( $real_size<$desired_size ){
+      //this is done only when a) *log.1 doesn't exist and b)when
+      //*.log contains only the data for one day or less
+      if( $real_size < 2 ){
+        $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}:[0-2][0-9]#';
+        $unit_data = parse_log_file( $path, $time_exp );
+      }
+    }
+  }
+  
+  echo ( json_encode( $unit_data ) );
   wp_die();
 
 }

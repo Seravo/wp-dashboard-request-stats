@@ -16,7 +16,7 @@ jQuery(document).ready(function($){
 
     jQuery.each(json, function (i,value){
 
-      label.push(value.date);
+      label.push(value.time);
       chartValue.push(value.request_count);
 
     });
