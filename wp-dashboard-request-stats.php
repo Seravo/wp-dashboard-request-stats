@@ -47,17 +47,17 @@ add_action( 'wp_ajax_get_chart_data', 'get_chart_data_callback' );
  */
 function wpdrs_init( $page_hook ) {
 
-  //styles
-  //wp_register_style( 'stylesheet', plugins_url('style.css', __FILE__) );
-  //wp_enqueue_style( 'stylesheet');
-
-  //make sure the scripts are loaded only where needed
+   //make sure the scripts/stylesheets are loaded only where needed
   if ( 'index.php' == $page_hook ){
     //external scripts
     wp_register_script( 'chartjs', plugins_url( '/script/Chart.js' , __FILE__), null, null, true );
     wp_register_script( 'drawjs', plugins_url( '/script/draw.js' , __FILE__), null, null, true );
     wp_enqueue_script( 'chartjs' );
     wp_enqueue_script( 'drawjs' );
+    //styles
+    //wp_register_style( 'stylesheet', plugins_url('style.css', __FILE__) );
+    //wp_enqueue_style( 'stylesheet');
+
     //wp_localize_script( 'ajax-script', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' )) );
   }
 }

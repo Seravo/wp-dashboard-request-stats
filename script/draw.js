@@ -1,9 +1,10 @@
 //apparently the script breaks other pages because when other pages are loaded the canvas doesn't exist,
-//which results in the script breaking other scripts, so make sure it's only loaded where needed
+//which results in the script breaking other scripts, so make sure it's only loaded where needed in WP
 
-jQuery( document ).ready(function(){
+(function ($) {
+$( document ).ready(function(){
   //get context
-  var context = jQuery("#myChart").get(0).getContext("2d");
+  var context = $("#myChart").get(0).getContext("2d");
   //doesn't work, fix it later:
   //var options = { legendTemplate : "<ul id=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].pointColor%>\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>" };
 
@@ -14,9 +15,9 @@ jQuery( document ).ready(function(){
   var chartLabel = [];
   var chartValue = [];
 
-  jQuery.getJSON(ajaxurl, ajaxData, function(json){
+  $.getJSON(ajaxurl, ajaxData, function(json){
 
-    jQuery.each(json, function (i,value){
+    $.each(json, function (i,value){
 
       chartLabel.push(value.time);
       chartValue.push(value.request_count);
@@ -53,10 +54,11 @@ jQuery( document ).ready(function(){
 
   
     var myLineChart = new Chart(context).Line(chartData);
-    //var legend = myLineChart.generateLegend();
-    //$( '#chart-legend' ).html(legend);
+    var legend = myLineChart.generateLegend();
+    $( '#chart-legend' ).html(legend);
     
 
   });
 
 });
+})(jQuery);
