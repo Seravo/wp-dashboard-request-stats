@@ -1,7 +1,9 @@
-jQuery(document).ready(function($){
-  //get context
-  var ctx = $("#myChart").get(0).getContext("2d");
+//apparently the script breaks other pages because when other pages are loaded the canvas doesn't exist,
+//which results in the script breaking other scripts, so make sure it's only loaded where needed
 
+jQuery( document ).ready(function(){
+  //get context
+  var context = jQuery("#myChart").get(0).getContext("2d");
   //doesn't work, fix it later:
   //var options = { legendTemplate : "<ul id=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].pointColor%>\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>" };
 
@@ -9,21 +11,21 @@ jQuery(document).ready(function($){
 			'action': 'get_chart_data',
   };
 
-  var label = [];
+  var chartLabel = [];
   var chartValue = [];
 
   jQuery.getJSON(ajaxurl, ajaxData, function(json){
 
     jQuery.each(json, function (i,value){
 
-      label.push(value.time);
+      chartLabel.push(value.time);
       chartValue.push(value.request_count);
 
     });
 
     //chart options
     var chartData = {
-      labels: label,
+      labels: chartLabel,
       datasets: [
        /** {
             label: "PHP",
@@ -50,7 +52,7 @@ jQuery(document).ready(function($){
     };
 
   
-    var myLineChart = new Chart(ctx).Line(chartData);
+    var myLineChart = new Chart(context).Line(chartData);
     //var legend = myLineChart.generateLegend();
     //$( '#chart-legend' ).html(legend);
     

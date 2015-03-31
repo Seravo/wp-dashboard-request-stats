@@ -36,26 +36,30 @@ class time_data {
     //public $get_count= 0;
 }
 
+add_action( 'admin_enqueue_scripts', 'wpdrs_init' );
+add_action( 'wp_dashboard_setup', 'wpdrs_add_dashboard_widgets' );
+add_action( 'wp_ajax_get_chart_data', 'get_chart_data_callback' );
+
 
 
 /**
  * Initialize the plugin
  */
-function wpdrs_init() {
-  //wp_register_script('chartjs', plugins_url('/script/Chart.js', __FILE__), array('chartjs'),'1.0.1', true);
+function wpdrs_init( $page_hook ) {
 
-
-  
   //styles
   //wp_register_style( 'stylesheet', plugins_url('style.css', __FILE__) );
   //wp_enqueue_style( 'stylesheet');
 
-  //external scripts
-  wp_register_script( 'chartjs', plugins_url( '/script/Chart.js' , __FILE__) );
-  wp_register_script( 'drawjs', plugins_url( '/script/draw.js' , __FILE__) );
-  wp_enqueue_script( 'chartjs' );
-  wp_enqueue_script( 'drawjs' );
-  wp_localize_script( 'ajax-script', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' )) );
+  //make sure the scripts are loaded only where needed
+  if ( 'index.php' == $page_hook ){
+    //external scripts
+    wp_register_script( 'chartjs', plugins_url( '/script/Chart.js' , __FILE__), null, null, true );
+    wp_register_script( 'drawjs', plugins_url( '/script/draw.js' , __FILE__), null, null, true );
+    wp_enqueue_script( 'chartjs' );
+    wp_enqueue_script( 'drawjs' );
+    //wp_localize_script( 'ajax-script', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' )) );
+  }
 }
 
 
@@ -208,9 +212,5 @@ function get_chart_data_callback() {
   wp_die();
 
 }
-
-add_action( 'admin_enqueue_scripts', 'wpdrs_init' );
-add_action( 'wp_dashboard_setup', 'wpdrs_add_dashboard_widgets' );
-add_action( 'wp_ajax_get_chart_data', 'get_chart_data_callback' );
 
 ?>
