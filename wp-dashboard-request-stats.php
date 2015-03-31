@@ -1,7 +1,7 @@
 <?php
 /**
 * Plugin Name: WP Dashboard Request Stats
-* Plugin URI: https://github.com/Seravo/wp-dashboard-log-monitor
+* Plugin URI: https://github.com/Seravo/wp-dashboard-request-stats
 * Description: Draws a graph from access log data into a dashboard widget
 * Author: Tari Zahabi / Seravo Oy
 * Author URI: http://seravo.fi
@@ -69,10 +69,10 @@ function wpdrs_init( $page_hook ) {
  */
 function wpdrs_add_dashboard_widgets() {
 	wp_add_dashboard_widget(
-                 'wp-dashboard-request-stats',         // Widget slug.
-                 'WP Dashboard Request Stats',         // Title.
+                 'wp-dashboard-request-stats',     // Widget slug.
+                 'Request Stats',                  // Title.
                  'wpdrs_dashboard_widget_function' // Display function.
-        );	
+        );
 }
 
 
@@ -94,7 +94,7 @@ function parse_log_file( $path , $regexp ){
   $lines = file( $path );
   if($lines==false){
     return false;
-  } 
+  }
 
   $unit = new time_data;
   $time_array = array();
@@ -122,9 +122,9 @@ function parse_log_file( $path , $regexp ){
     /*if ( preg_match( $resp_exp , $line )){
       $day->get_count++ ;
     } elseif (preg_match( "/MISS/" , $line )){
-      $day->post_count++; 
+      $day->post_count++;
     }*/
-  
+
   }
   }
 
@@ -137,7 +137,7 @@ function parse_log_file( $path , $regexp ){
 
 /**
  * Fetch the chart data
- */ 
+ */
 function get_chart_data_callback() {
 
   //get_transient
@@ -155,19 +155,19 @@ function get_chart_data_callback() {
 
     $entry = $parser->parse($line);
 
-  }*/ 
+  }*/
 
   $log_location = dirname( ini_get( 'error_log' ) );
   $path = "$log_location/total-access.log";
   //$path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/empty.log';
-  
+
   //$path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
   $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
   $unit_data = array();
 
   //desired length of the array,
   $desired_size = 7;
-  
+
   //if *.log.1 exist, there's always enough data to create a nice chart
   if ( file_exists( $path . '.1' ) ){
     $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
@@ -207,10 +207,9 @@ function get_chart_data_callback() {
       }
     }
   }
-  
+
   echo ( json_encode( $unit_data ) );
   wp_die();
 
 }
-
 ?>
