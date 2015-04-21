@@ -81,7 +81,7 @@ function wpdrs_add_dashboard_widgets() {
  */
 function wpdrs_dashboard_widget_function() {
 	// Display canvas.
-	echo '<canvas id="myChart" width="450" height="400"></canvas>';
+	echo '<canvas id="myChart" style="width:100%; height:100%"></canvas>';
   //echo '<div id="chart-legend" ></div>';
 }
 
