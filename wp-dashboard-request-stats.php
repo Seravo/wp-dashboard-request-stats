@@ -32,7 +32,7 @@ define('__ROOT__', dirname(__FILE__));
 class time_data {
     public $time = NULL;
     public $request_count = 0;
-    //public $post_count = 0;
+    public $avg_resp = 0;
     //public $get_count= 0;
 }
 
@@ -81,7 +81,9 @@ function wpdrs_add_dashboard_widgets() {
  */
 function wpdrs_dashboard_widget_function() {
 	// Display canvas.
-	echo '<canvas id="myChart" style="width:100%; height:100%"></canvas>';
+	echo '<canvas id="lineChart" style="width:100%; height:100%"></canvas>';
+	echo '<canvas id="barChart" style="width:100%; height:100%"></canvas>';
+ 
   //echo '<div id="chart-legend" ></div>';
 }
 
@@ -99,25 +101,34 @@ function parse_log_file( $path , $regexp ){
   $unit = new time_data;
   $time_array = array();
   $matches;
-
+	$resp_exp= "#[0-9]+.[0-9]+$#";
+  $res_sum=0;
   foreach ( $lines as $line ){
   //find and extract timestamp
-  if (preg_match( $regexp, $line, $matches )){
+		if (preg_match( $regexp, $line, $matches )){
 
-    //this is done only once to set the previous
-    if( is_null($unit->time) ){
-      $unit->time = $matches[0];
+			//this is done only once to set the previous
+			if( is_null($unit->time) ){
+				$unit->time = $matches[0];
+			}
+			//if date has changed, write to new date object
+			
+			if( $unit->time != $matches[0] ){
+      	//divide the sum of response times with requestcount
+				$unit->avg_resp = $res_sum / $unit->request_count;
+				$res_sum = 0;
+				// push old into array
+				$time_array[] = $unit;
+				$unit = new time_data;
+				$unit->time = $matches[0];
+			}
 
-    }
-    //if date has changed, write to new date object
-    if( $unit->time != $matches[0] ){
-      // push old into array
-      $time_array[] = $unit;
-      $unit = new time_data;
-      $unit->time = $matches[0];
-    }
+			if(preg_match( $regexp, $line, $matches )){
 
-    $unit->request_count++;
+				$res_sum = $res_sum + $matches[0];
+	
+			}
+			$unit->request_count++;
 
     /*if ( preg_match( $resp_exp , $line )){
       $day->get_count++ ;
@@ -128,8 +139,9 @@ function parse_log_file( $path , $regexp ){
   }
   }
 
+	//divide the sum of response times with requestcount
   // push last into array
-
+	$unit->avg_resp = $res_sum / $unit->request_count;
   $time_array[] = $unit;
   return $time_array;
 }

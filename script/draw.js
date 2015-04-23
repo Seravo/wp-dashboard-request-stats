@@ -4,7 +4,8 @@
 (function ($) {
 $( document ).ready(function(){
   //get context
-  var context = $("#myChart").get(0).getContext("2d");
+  var context = $("#lineChart").get(0).getContext("2d");
+	var context2 = $("#barChart").get(0).getContext("2d");
   //doesn't work, fix it later:
   //var options = { legendTemplate : "<ul id=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].pointColor%>\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>" };
 
@@ -13,19 +14,20 @@ $( document ).ready(function(){
   };
 
   var chartLabel = [];
-  var chartValue = [];
-
+  var lineValue = [];
+	var barValue = [];
+	
   $.getJSON(ajaxurl, ajaxData, function(json){
 
     $.each(json, function (i,value){
 
       chartLabel.push(value.time);
-      chartValue.push(value.request_count);
-
+      lineValue.push(value.request_count);
+			barValue.push(value.avg_resp);
     });
 
     //chart options
-    var chartData = {
+    var LineChartData = {
       labels: chartLabel,
       datasets: [
        /** {
@@ -47,13 +49,28 @@ $( document ).ready(function(){
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
-            data: chartValue
+            data: lineValue
         }
       ]
     };
 
+
+	var BarChartData = {
+    labels: chartLabel,
+    datasets: [
+        {
+            label: "My First dataset",
+            fillColor: "rgba(220,220,220,0.5)",
+            strokeColor: "rgba(220,220,220,0.8)",
+            highlightFill: "rgba(220,220,220,0.75)",
+            highlightStroke: "rgba(220,220,220,1)",
+            data: barValue
+        }
+    ]
+	};
   
-    var myLineChart = new Chart(context).Line(chartData);
+    var myBarChart = new Chart(context2).Bar(BarChartData);
+		var myLineChart = new Chart(context).Line(LineChartData);
     var legend = myLineChart.generateLegend();
     $( '#chart-legend' ).html(legend);
     
