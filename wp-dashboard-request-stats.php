@@ -102,7 +102,7 @@ function parse_log_file( $path , $regexp ){
   $time_array = array();
   $matches;
 	$resp_exp= "#[0-9]+.[0-9]+$#";
-  $res_sum=0;
+	$res_sum=0;
   foreach ( $lines as $line ){
   //find and extract timestamp
 		if (preg_match( $regexp, $line, $matches )){
@@ -115,17 +115,17 @@ function parse_log_file( $path , $regexp ){
 			
 			if( $unit->time != $matches[0] ){
       	//divide the sum of response times with requestcount
-				$unit->avg_resp = $res_sum / $unit->request_count;
-				$res_sum = 0;
+				$unit->avg_resp = floatval($res_sum) / $unit->request_count;
 				// push old into array
 				$time_array[] = $unit;
 				$unit = new time_data;
 				$unit->time = $matches[0];
+				$res_sum=0;
 			}
 
-			if(preg_match( $regexp, $line, $matches )){
+			if(preg_match( $resp_exp, $line, $matches )){
 
-				$res_sum = $res_sum + $matches[0];
+				$res_sum = $res_sum + floatval($matches[0]);
 	
 			}
 			$unit->request_count++;
@@ -141,7 +141,7 @@ function parse_log_file( $path , $regexp ){
 
 	//divide the sum of response times with requestcount
   // push last into array
-	$unit->avg_resp = $res_sum / $unit->request_count;
+	$unit->avg_resp = floatval($res_sum) / $unit->request_count;
   $time_array[] = $unit;
   return $time_array;
 }

@@ -59,7 +59,7 @@ $( document ).ready(function(){
     labels: chartLabel,
     datasets: [
         {
-            label: "My First dataset",
+            label: "Responsetimes (in seconds)",
             fillColor: "rgba(220,220,220,0.5)",
             strokeColor: "rgba(220,220,220,0.8)",
             highlightFill: "rgba(220,220,220,0.75)",
