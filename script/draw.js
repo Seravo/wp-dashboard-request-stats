@@ -5,25 +5,25 @@
 $( document ).ready(function(){
   //get context
   var context = $("#lineChart").get(0).getContext("2d");
-	var context2 = $("#barChart").get(0).getContext("2d");
+  var context2 = $("#barChart").get(0).getContext("2d");
   //doesn't work, fix it later:
   //var options = { legendTemplate : "<ul id=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].pointColor%>\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>" };
 
   var ajaxData = {
-			'action': 'get_chart_data',
+      'action': 'get_chart_data',
   };
 
   var chartLabel = [];
   var lineValue = [];
-	var barValue = [];
-	
+  var barValue = [];
+  
   $.getJSON(ajaxurl, ajaxData, function(json){
 
     $.each(json, function (i,value){
 
       chartLabel.push(value.time);
       lineValue.push(value.request_count);
-			barValue.push(value.avg_resp);
+      barValue.push(value.avg_resp);
     });
 
     //chart options
@@ -55,7 +55,7 @@ $( document ).ready(function(){
     };
 
 
-	var BarChartData = {
+  var BarChartData = {
     labels: chartLabel,
     datasets: [
         {
@@ -67,10 +67,10 @@ $( document ).ready(function(){
             data: barValue
         }
     ]
-	};
+  };
   
     var myBarChart = new Chart(context2).Bar(BarChartData);
-		var myLineChart = new Chart(context).Line(LineChartData);
+    var myLineChart = new Chart(context).Line(LineChartData);
     var legend = myLineChart.generateLegend();
     $( '#chart-legend' ).html(legend);
     

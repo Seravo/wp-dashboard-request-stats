@@ -18,14 +18,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-define('__ROOT__', dirname(__FILE__));
+//define('__ROOT__', dirname(__FILE__));
 
-//require_once __ROOT__."/include/FormatException.php";
-//require_once __ROOT__."/include/LogParser.php";
-//log dir
-//$log_path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
-/*$default_access_log_format = '%h %a %{User-Identifier}i %u %t "%r" %>s %b "%{Referer}i" "%{User-Agent}i" %{Cache-Status}i %{Powered-By}i %T';
-*/
+
 /**
  * Class to store parsed data
  */
@@ -36,16 +31,31 @@ class time_data {
     //public $get_count= 0;
 }
 
-add_action( 'admin_enqueue_scripts', 'wpdrs_init' );
-add_action( 'wp_dashboard_setup', 'wpdrs_add_dashboard_widgets' );
-add_action( 'wp_ajax_get_chart_data', 'get_chart_data_callback' );
+class dashboard_request_stats{
+
+ public static function get_instance() {
+    static $drs_instance = null;
+    if (null === $drs_instance) {
+      $drs_instance = new dashboard_request_stats();
+    }
+    return $drs_instance;
+  }
+
+
 
 
 
 /**
  * Initialize the plugin
  */
-function wpdrs_init( $page_hook ) {
+public function __construct() {
+  add_action( 'admin_enqueue_scripts', array( $this, 'init' ) );
+  add_action( 'wp_dashboard_setup', array( $this,'add_dashboard_widget') );
+  add_action( 'wp_ajax_get_chart_data',array( $this,'get_chart_data_callback') );
+}
+
+
+public function init( $page_hook ) {
 
    //make sure the scripts/stylesheets are loaded only where needed
   if ( 'index.php' == $page_hook ){
@@ -60,6 +70,11 @@ function wpdrs_init( $page_hook ) {
 
     //wp_localize_script( 'ajax-script', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' )) );
   }
+
+  else{
+    return;
+  }
+
 }
 
 
@@ -67,11 +82,11 @@ function wpdrs_init( $page_hook ) {
  * Add a widget to the dashboard.
  * This function is hooked into the 'wp_dashboard_setup' action below.
  */
-function wpdrs_add_dashboard_widgets() {
-	wp_add_dashboard_widget(
+public function add_dashboard_widget() {
+  wp_add_dashboard_widget(
                  'wp-dashboard-request-stats',     // Widget slug.
                  'Request Stats',                  // Title.
-                 'wpdrs_dashboard_widget_function' // Display function.
+                 array($this,'create_widget_content') // Display function.
         );
 }
 
@@ -79,19 +94,18 @@ function wpdrs_add_dashboard_widgets() {
 /**
  * Create the function to output the contents of our Dashboard Widget.
  */
-function wpdrs_dashboard_widget_function() {
-	// Display canvas.
-	echo '<canvas id="lineChart" style="width:100%; height:100%"></canvas>';
-	echo '<canvas id="barChart" style="width:100%; height:100%"></canvas>';
+public function create_widget_content() {
+  // Display canvas.
+  echo '<canvas id="lineChart" style="width:100%; height:100%"></canvas>';
+  echo '<canvas id="barChart" style="width:100%; height:100%"></canvas>';
  
-  //echo '<div id="chart-legend" ></div>';
 }
 
 
 /**
- * Parse a logfile and return a array of day_data objects
+ * Parse a logfile and return an array of day_data objects
  */
-function parse_log_file( $path , $regexp ){
+private function parse_log_file( $path , $regexp ){
 
   $lines = file( $path );
   if($lines==false){
@@ -101,34 +115,34 @@ function parse_log_file( $path , $regexp ){
   $unit = new time_data;
   $time_array = array();
   $matches;
-	$resp_exp= "#[0-9]+.[0-9]+$#";
-	$res_sum=0;
+  $resp_exp= "#[0-9]+.[0-9]+$#";
+  $res_sum=0;
   foreach ( $lines as $line ){
   //find and extract timestamp
-		if (preg_match( $regexp, $line, $matches )){
+    if (preg_match( $regexp, $line, $matches )){
 
-			//this is done only once to set the previous
-			if( is_null($unit->time) ){
-				$unit->time = $matches[0];
-			}
-			//if date has changed, write to new date object
-			
-			if( $unit->time != $matches[0] ){
-      	//divide the sum of response times with requestcount
-				$unit->avg_resp = floatval($res_sum) / $unit->request_count;
-				// push old into array
-				$time_array[] = $unit;
-				$unit = new time_data;
-				$unit->time = $matches[0];
-				$res_sum=0;
-			}
+      //this is done only once to set the previous
+      if( is_null($unit->time) ){
+        $unit->time = $matches[0];
+      }
+      //if date has changed, write to new date object
+      
+      if( $unit->time != $matches[0] ){
+        //divide the sum of response times with requestcount
+        $unit->avg_resp = floatval($res_sum) / $unit->request_count;
+        // push old into array
+        $time_array[] = $unit;
+        $unit = new time_data;
+        $unit->time = $matches[0];
+        $res_sum=0;
+      }
 
-			if(preg_match( $resp_exp, $line, $matches )){
+      if(preg_match( $resp_exp, $line, $matches )){
 
-				$res_sum = $res_sum + floatval($matches[0]);
-	
-			}
-			$unit->request_count++;
+        $res_sum = $res_sum + floatval($matches[0]);
+  
+      }
+      $unit->request_count++;
 
     /*if ( preg_match( $resp_exp , $line )){
       $day->get_count++ ;
@@ -139,9 +153,9 @@ function parse_log_file( $path , $regexp ){
   }
   }
 
-	//divide the sum of response times with requestcount
+  //divide the sum of response times with requestcount
   // push last into array
-	$unit->avg_resp = floatval($res_sum) / $unit->request_count;
+  $unit->avg_resp = floatval($res_sum) / $unit->request_count;
   $time_array[] = $unit;
   return $time_array;
 }
@@ -150,30 +164,10 @@ function parse_log_file( $path , $regexp ){
 /**
  * Fetch the chart data
  */
-function get_chart_data_callback() {
-
-  //get_transient
-  /*
-
-  $day = new day_data;
-  $days_array = array();
-  $parser = new \Kassner\LogParser\LogParser();
-  $parser->setFormat( $default_access_log_format );
-  $lines = file( '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log' );
-  $total_request_count = 0;
-  foreach ( $lines as $line ) {
-
-    $total_request_count++;
-
-    $entry = $parser->parse($line);
-
-  }*/
+public function get_chart_data_callback() {
 
   $log_location = dirname( ini_get( 'error_log' ) );
   $path = "$log_location/total-access.log";
-  //$path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/empty.log';
-
-  //$path = '/usr/share/nginx/www/wp-content/plugins/wp-dashboard-request-stats/total-access.log';
   $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
   $unit_data = array();
 
@@ -183,11 +177,11 @@ function get_chart_data_callback() {
   //if *.log.1 exist, there's always enough data to create a nice chart
   if ( file_exists( $path . '.1' ) ){
     $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
-    $unit_data = parse_log_file( $path, $time_exp );
+    $unit_data = $this->parse_log_file( $path, $time_exp );
     $real_size = count( $unit_data );
 
     if( $real_size < $desired_size ){
-      $temp = parse_log_file( $path . '.1', $time_exp );
+      $temp = $this->parse_log_file( $path . '.1', $time_exp );
       //might require some optimization later on
       $unit_data = array_reverse( $unit_data );
 
@@ -224,4 +218,6 @@ function get_chart_data_callback() {
   wp_die();
 
 }
-?>
+}
+
+$dashboard_request_stats = dashboard_request_stats::get_instance();
