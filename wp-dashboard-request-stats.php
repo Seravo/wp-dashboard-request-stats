@@ -194,7 +194,7 @@ public function get_chart_data_callback() {
   }
   
   unset($file);
-  
+  //parse files
   foreach( $log_files as $file ){
     $temp_array[] = $this->parse_log_file( $file, $time_exp );
       foreach( $temp_array as $time_array ){
@@ -203,31 +203,8 @@ public function get_chart_data_callback() {
         }
       }
   }
-  
-  $temp_array = array();;
-  $temp_array2 = array();
-  
-  //one instance per day
-  for( $x = 0; $x < count($unit_data) ; $x++ ){
-     $temp_array[]= $unit_data[$x]->time;
-  }
-  
-  $temp_array = array_unique($temp_array);
-  
-  foreach( $temp_array as $date ){
-    $asd = new time_data();
-    $asd->time = $date;
-    for( $x = 0; $x < count( $unit_data );$x++ ){
-      if( $date == $unit_data[$x]->time ){
-          $asd->request_count = $asd->request_count + $unit_data[$x]->request_count;
-          $asd->avg_resp = $asd->avg_resp + $unit_data[$x]->avg_resp;
-        
-      }
-    }
-    $temp_array2[] = $asd;
-  }
-
-  $unit_data = $temp_array2;
+ 
+  $unit_data = $this->clean_array($unit_data);
 
   //error_log(print_r($toinen,true),0);
   //get rid of duplicate values
@@ -237,7 +214,40 @@ public function get_chart_data_callback() {
 
 }
 
+/**
+ * Remove duplicates and make sure the entries in the array are in proper order
+ */
 
+private function clean_array ( $array ){
+  
+  $temp_array = array();
+  $temp_array2 = array();
+  
+  //get a list of unique list
+  for( $x = 0; $x < count($array) ; $x++ ){
+     $temp_array[]= $array[$x]->time;
+  }
+  
+  $temp_array = array_unique($temp_array);
+  
+  //remove duplicates from array
+  foreach( $temp_array as $date ){
+    $asd = new time_data();
+    $asd->time = $date;
+    for( $x = 0; $x < count( $array );$x++ ){
+      if( $date == $array[$x]->time ){
+          $asd->request_count = $asd->request_count + $array[$x]->request_count;
+          $asd->avg_resp = $asd->avg_resp + $array[$x]->avg_resp;
+      }
+    }
+    $temp_array2[] = $asd;
+  }
+  
+  
+  
+  $array = $temp_array2; 
+  return $array;
+}
 
 }
 
