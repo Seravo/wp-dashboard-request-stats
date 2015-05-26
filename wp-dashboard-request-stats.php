@@ -192,7 +192,9 @@ public function get_chart_data_callback() {
       }
     }
   }
+  
   unset($file);
+  
   foreach( $log_files as $file ){
     $temp_array[] = $this->parse_log_file( $file, $time_exp );
       foreach( $temp_array as $time_array ){
@@ -202,27 +204,41 @@ public function get_chart_data_callback() {
       }
   }
   
+  $temp_array = array();;
+  $temp_array2 = array();
   
-  error_log(print_r($unit_data,true),0);
+  //one instance per day
+  for( $x = 0; $x < count($unit_data) ; $x++ ){
+     $temp_array[]= $unit_data[$x]->time;
+  }
   
-  $temp_array = array();
+  $temp_array = array_unique($temp_array);
   
-  for($x=0;$x<count($unit_data);$x++){
-    for($y=0;$y<count($unit_data);$y++){
-      if( $x != $y){
-        /*if( $unit_data[$x]->time == $unit_data[$y]->time ){
-          /*$unit_data[$x]->request_count = $unit_data[$x]->request_count + $unit_data[$y]->request_count;
-          $unit_data[$x]->avg_resp = $unit_data[$x]->avg_resp +  $unit_data[$y]->avg_resp;
-          $temp_array[] = $unit_data[$x];
-        }*/
+  foreach( $temp_array as $date ){
+    $asd = new time_data();
+    $asd->time = $date;
+    for( $x = 0; $x < count( $unit_data );$x++ ){
+      if( $date == $unit_data[$x]->time ){
+          $asd->request_count = $asd->request_count + $unit_data[$x]->request_count;
+          $asd->avg_resp = $asd->avg_resp + $unit_data[$x]->avg_resp;
+        
       }
     }
+    $temp_array2[] = $asd;
   }
+
+  $unit_data = $temp_array2;
+
+  //error_log(print_r($toinen,true),0);
+  //get rid of duplicate values
   
   echo ( json_encode( $unit_data ) );
   wp_die();
 
 }
+
+
+
 }
 
 $dashboard_request_stats = dashboard_request_stats::get_instance();
