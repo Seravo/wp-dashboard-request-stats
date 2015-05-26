@@ -170,21 +170,15 @@ private function parse_log_file( $path , $regexp ){
 public function get_chart_data_callback() {
 
   $log_location = dirname( ini_get( 'error_log' ) );
-  //$path = "$log_location/total-access.log";
-  
   $log_file = '/total-access.log*';
   $log_files = glob( $log_location . $log_file ); // all available logfiles, including gzipped ones
-  $file_count = count( $log_files );
-  $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
-  $unit_data = array();
-  $temp_array = array();
+  //$file_count = count( $log_files );
+  //$time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
+  $amount = 4; //amount of days
   
-
-  if($file_count == 0){
-      return;
-  }
+  $unit_data = $this->get_log_data( $log_files, $amount );
   
-  else{
+  /*else{
     //check which files are gzipped
     foreach($log_files as $key => $file){
       if(preg_match('#gz#',$file)){
@@ -202,12 +196,11 @@ public function get_chart_data_callback() {
           $unit_data[] = $day;
         }
       }
-  }
- 
+  }*/
+
   $unit_data = $this->clean_array($unit_data);
 
   //error_log(print_r($toinen,true),0);
-  //get rid of duplicate values
   
   echo ( json_encode( $unit_data ) );
   wp_die();
@@ -254,6 +247,39 @@ private function clean_array( $array ){
   
   $array = $temp_array2;
   return $array;
+}
+/**
+ * Return desired amount of data specified in days
+ * Eats an array
+ */
+
+private function get_log_data( $logfiles, $amount ){
+  $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
+  $temp_array = array();
+  $unit_data = array();
+  if( count($logfiles) == 0 ){
+      return;
+  }
+  else{
+    //check which files are gzipped
+    foreach($logfiles as $key => $file){
+      if(preg_match('#gz#',$file)){
+        unset($logfiles[$key]);
+      }
+    }
+  }
+  unset($file);
+  //parse files
+  foreach( $logfiles as $file ){
+    $temp_array[] = $this->parse_log_file( $file, $time_exp );
+      foreach( $temp_array as $time_array ){
+        foreach($time_array as $day){
+          $unit_data[] = $day;
+        }
+      }
+  }
+
+return $unit_data;
 }
 
 }
