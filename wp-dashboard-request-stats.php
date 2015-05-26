@@ -155,8 +155,11 @@ private function parse_log_file( $path , $regexp ){
 
   //divide the sum of response times with requestcount
   // push last into array
+  
   $unit->avg_resp = floatval($res_sum) / $unit->request_count;
   $time_array[] = $unit;
+  
+  
   return $time_array;
 }
 
@@ -167,53 +170,55 @@ private function parse_log_file( $path , $regexp ){
 public function get_chart_data_callback() {
 
   $log_location = dirname( ini_get( 'error_log' ) );
-  $path = "$log_location/total-access.log";
+  //$path = "$log_location/total-access.log";
+  
+  $log_file = '/total-access.log*';
+  $log_files = glob( $log_location . $log_file ); // all available logfiles, including gzipped ones
+  $file_count = count( $log_files );
   $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
   $unit_data = array();
+  $temp_array = array();
+  
 
-  //desired length of the array,
-  $desired_size = 7;
-
-  //if *.log.1 exist, there's always enough data to create a nice chart
-  if ( file_exists( $path . '.1' ) ){
-    $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
-    $unit_data = $this->parse_log_file( $path, $time_exp );
-    $real_size = count( $unit_data );
-
-    if( $real_size < $desired_size ){
-      $temp = $this->parse_log_file( $path . '.1', $time_exp );
-      //might require some optimization later on
-      $unit_data = array_reverse( $unit_data );
-
-      for( $i = 0; $i <= ( $desired_size - $real_size ); $i++ ){
-          $value = array_pop( $temp );
-
-          if(!is_null($value)){
-            $unit_data[] = $value;
-          }
-      }
-      $unit_data = array_reverse( $unit_data );
-    }
+  if($file_count == 0){
+      return;
   }
-  //if *.log.1 doesn't exist, we have to be sure there's enough data
-  //to draw the chart
+  
   else{
-    $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
-    $unit_data = parse_log_file( $path, $time_exp );
-    $real_size = count( $unit_data );
-
-    if( $real_size<$desired_size ){
-      //this is done only when a) *log.1 doesn't exist and b)when
-      //*.log contains only the data for one day or less
-
-      if( $real_size < 2 ){
-        //regex for hours
-        $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}:[0-2][0-9]#';
-        $unit_data = parse_log_file( $path, $time_exp );
+    //check which files are gzipped
+    foreach($log_files as $key => $file){
+      if(preg_match('#gz#',$file)){
+        unset($log_files[$key]);
       }
     }
   }
-
+  unset($file);
+  foreach( $log_files as $file ){
+    $temp_array[] = $this->parse_log_file( $file, $time_exp );
+      foreach( $temp_array as $time_array ){
+        foreach($time_array as $day){
+          $unit_data[] = $day;
+        }
+      }
+  }
+  
+  
+  error_log(print_r($unit_data,true),0);
+  
+  $temp_array = array();
+  
+  for($x=0;$x<count($unit_data);$x++){
+    for($y=0;$y<count($unit_data);$y++){
+      if( $x != $y){
+        /*if( $unit_data[$x]->time == $unit_data[$y]->time ){
+          /*$unit_data[$x]->request_count = $unit_data[$x]->request_count + $unit_data[$y]->request_count;
+          $unit_data[$x]->avg_resp = $unit_data[$x]->avg_resp +  $unit_data[$y]->avg_resp;
+          $temp_array[] = $unit_data[$x];
+        }*/
+      }
+    }
+  }
+  
   echo ( json_encode( $unit_data ) );
   wp_die();
 
