@@ -107,7 +107,13 @@ public function create_widget_content() {
  */
 private function parse_log_file( $path , $regexp ){
 
-  $lines = file( $path );
+  if(preg_match('#gz#',$path)){
+    $lines = gzfile( $path );
+   error_log("laama on laamoista laamoin");
+  }
+  else{
+    $lines = file( $path );
+  }
   if($lines==false){
     return false;
   }
@@ -174,7 +180,7 @@ public function get_chart_data_callback() {
   $log_files = glob( $log_location . $log_file ); // all available logfiles, including gzipped ones
   //$file_count = count( $log_files );
   //$time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
-  $amount = 4; //amount of days
+  $amount = 7; //amount of days
   
   $unit_data = $this->get_log_data( $log_files, $amount );
   
@@ -198,7 +204,7 @@ public function get_chart_data_callback() {
       }
   }*/
 
-  $unit_data = $this->clean_array($unit_data);
+  //$unit_data = $this->clean_array($unit_data);
 
   //error_log(print_r($toinen,true),0);
   
@@ -230,7 +236,7 @@ private function clean_array( $array ){
   }*/
   
   sort($temp_array);
-  error_log(print_r($temp_array,true),0);
+  //error_log(print_r($temp_array,true),0);
   
   //remove duplicates from array
   foreach( $temp_array as $date ){
@@ -260,7 +266,7 @@ private function get_log_data( $logfiles, $amount ){
   if( count($logfiles) == 0 ){
       return;
   }
-  else{
+  /*else{
     //check which files are gzipped
     foreach($logfiles as $key => $file){
       if(preg_match('#gz#',$file)){
@@ -268,16 +274,34 @@ private function get_log_data( $logfiles, $amount ){
       }
     }
   }
-  unset($file);
+  unset($file);*/
   //parse files
-  foreach( $logfiles as $file ){
+  
+  /*foreach( $logfiles as $file ){
     $temp_array[] = $this->parse_log_file( $file, $time_exp );
       foreach( $temp_array as $time_array ){
         foreach($time_array as $day){
           $unit_data[] = $day;
         }
       }
+  }*/
+
+  foreach ( $logfiles as $file ){
+    $temp_array[] = $this->parse_log_file( $file, $time_exp );
+    foreach( $temp_array as $time_array ){
+        foreach($time_array as $day){
+          $unit_data[] = $day;
+          $unit_data = $this->clean_array($unit_data);
+        }
+      }
+    if(count($unit_data)==$amount){
+     break;      
+    }
   }
+
+error_log(print_r($unit_data,true),0);
+
+
 
 return $unit_data;
 }
