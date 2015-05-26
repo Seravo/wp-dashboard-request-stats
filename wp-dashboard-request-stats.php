@@ -218,17 +218,26 @@ public function get_chart_data_callback() {
  * Remove duplicates and make sure the entries in the array are in proper order
  */
 
-private function clean_array ( $array ){
+private function clean_array( $array ){
   
   $temp_array = array();
   $temp_array2 = array();
   
-  //get a list of unique list
+  //get a list of unique dates
   for( $x = 0; $x < count($array) ; $x++ ){
      $temp_array[]= $array[$x]->time;
   }
   
   $temp_array = array_unique($temp_array);
+  $temp_array = array_values($temp_array);
+  //sort the array entries by date
+  /*for( $x = 0; $x < count($temp_array); $x++ ){
+    strtotime($temp_array[$x]);
+
+  }*/
+  
+  sort($temp_array);
+  error_log(print_r($temp_array,true),0);
   
   //remove duplicates from array
   foreach( $temp_array as $date ){
@@ -243,9 +252,7 @@ private function clean_array ( $array ){
     $temp_array2[] = $asd;
   }
   
-  
-  
-  $array = $temp_array2; 
+  $array = $temp_array2;
   return $array;
 }
 
