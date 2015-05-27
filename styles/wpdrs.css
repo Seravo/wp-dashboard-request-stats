@@ -1,3 +1,11 @@
-#wpdrs_content{overflow:auto;}
-#wpdrs_content .left { float:right;width:30%;margin:2px;border:1px; border-color:black;}
-#wpdrs_content .right { float:right; width:70%;margin:2px;}
+#wpdrs_content{overflow:auto;font-size:10px;}
+
+#wpdrs_content .numericData {
+  height:100%;
+  width:100%;
+  font-size:3em;
+  padding:2px;
+  float:right;
+  overflow:auto;
+  text-align:center;
+}

@@ -6,11 +6,31 @@
 
 /*<canvas id="lineChart" style="width:100%; height:100%"></canvas>
 <canvas id="barChart" style="width:100%; height:100%"></canvas>
-*/
 
+
+
+<div id="wpdrs_content">
+    <div class="chartData">
+      <div class="chart"><canvas id="lineChart" style="width:100%; height:100%"></canvas></div>
+      <div class="numericData">12312312132</div>
+    </div>
+    <div class="chartData">
+       <div class="chart"><canvas id="barChart" style="width:100%; height:100%"></canvas></div>
+      <div class="numericData">12312312313</div>
+</div>
+</div>*/
 ?>
 <div id="wpdrs_content">
-    <div class="left"></div>
-    <div class="right"><canvas id="lineChart" style="width:100%; height:100%"></canvas>
-      <canvas id="barChart" style="width:100%; height:100%"></canvas></div>
+<table>
+
+<tr>
+  <td><canvas id="lineChart" style="width:100%; height:100%"></canvas></td>
+  <td><div class="numericData">asdasd</div></td>
+</tr>
+<tr>
+  <td><canvas id="barChart" style="width:100%; height:100%"></canvas></td>
+  <td><div class="numericData">asdasd</div></td>
+</tr>
+
+</table>
 </div>
