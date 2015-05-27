@@ -109,7 +109,7 @@ private function parse_log_file( $path , $regexp ){
 
   if(preg_match('#gz#',$path)){
     $lines = gzfile( $path );
-   error_log("laama on laamoista laamoin");
+   //error_log("laama on laamoista laamoin");
   }
   else{
     $lines = file( $path );
@@ -126,7 +126,9 @@ private function parse_log_file( $path , $regexp ){
   foreach ( $lines as $line ){
   //find and extract timestamp
     if (preg_match( $regexp, $line, $matches )){
-
+      //convert the timestamp for easier sorting
+      $matches[0] = str_replace('/',' ',$matches[0]);
+      //error_log(strtotime($matches[0]));
       //this is done only once to set the previous
       if( is_null($unit->time) ){
         $unit->time = $matches[0];
@@ -235,9 +237,18 @@ private function clean_array( $array ){
 
   }*/
   
-  sort($temp_array);
-  //error_log(print_r($temp_array,true),0);
+  //sort($temp_array);
   
+  usort($temp_array, function($item1, $item2) {
+    $ts1 = strtotime($item1);
+    $ts2 = strtotime($item2);
+    return $ts2 - $ts1;
+  });
+  //usort reverses the values,
+  $temp_array  = array_reverse($temp_array,false);
+  
+  //error_log(print_r($temp_array,true),0);
+
   //remove duplicates from array
   foreach( $temp_array as $date ){
     $asd = new time_data();
@@ -285,25 +296,20 @@ private function get_log_data( $logfiles, $amount ){
         }
       }
   }*/
-
-  foreach ( $logfiles as $file ){
-    $temp_array[] = $this->parse_log_file( $file, $time_exp );
-    foreach( $temp_array as $time_array ){
+  
+    foreach($logfiles as $file){
+      $temp_array[] = $this->parse_log_file( $file, $time_exp );
+      foreach( $temp_array as $time_array ){
         foreach($time_array as $day){
           $unit_data[] = $day;
-          $unit_data = $this->clean_array($unit_data);
         }
       }
-    if(count($unit_data)==$amount){
-     break;      
     }
-  }
-
-error_log(print_r($unit_data,true),0);
+  
 
 
 
-return $unit_data;
+return $this->clean_array($unit_data);
 }
 
 }
