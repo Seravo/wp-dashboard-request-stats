@@ -184,33 +184,8 @@ public function get_chart_data_callback() {
   
   $unit_data = $this->get_log_data( $log_files, $amount );
   
-  /*else{
-    //check which files are gzipped
-    foreach($log_files as $key => $file){
-      if(preg_match('#gz#',$file)){
-        unset($log_files[$key]);
-      }
-    }
-  }
-  
-  unset($file);
-  //parse files
-  foreach( $log_files as $file ){
-    $temp_array[] = $this->parse_log_file( $file, $time_exp );
-      foreach( $temp_array as $time_array ){
-        foreach($time_array as $day){
-          $unit_data[] = $day;
-        }
-      }
-  }*/
-
-  //$unit_data = $this->clean_array($unit_data);
-
-  //error_log(print_r($toinen,true),0);
-  
   echo ( json_encode( $unit_data ) );
   wp_die();
-
 }
 
 /**
@@ -259,7 +234,6 @@ private function clean_array( $array ){
     }
     $temp_array2[] = $asd;
   }
-  
   $array = $temp_array2;
   return $array;
 }
@@ -295,24 +269,34 @@ private function get_log_data( $logfiles, $amount ){
       }
   }*/
   
-  foreach($logfiles as $file){
+  /*foreach($logfiles as $file){
     $temp_array = $this->parse_log_file( $file, $time_exp );
     $this->clean_array($temp_array);
     foreach($temp_array as $entry){
+      $unit_data[] = $entry;
       if(count($unit_data) >= $amount){
         break 2;
       }
-      else{
-        $unit_data[] = $entry;
+    }
+  }*/
+    
+  foreach($logfiles as $file){
+    //returns the contents of a logfile
+    $temp_array = $this->parse_log_file( $file, $time_exp );
+    foreach($temp_array as $entry){
+      $unit_data[] = $entry;
+      if(count($unit_data) >= $amount){
+        $unit_data = $this->clean_array($unit_data); 
+        if(count($unit_data) >= $amount){
+          break 2;
+        }
       }
     }
-    
   }
-  
 
 
 
-return $this->clean_array($unit_data);
+return $unit_data;
 }
 
 }
