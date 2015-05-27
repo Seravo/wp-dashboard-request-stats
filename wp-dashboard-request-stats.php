@@ -65,8 +65,8 @@ public function init( $page_hook ) {
     wp_enqueue_script( 'chartjs' );
     wp_enqueue_script( 'drawjs' );
     //styles
-    //wp_register_style( 'stylesheet', plugins_url('style.css', __FILE__) );
-    //wp_enqueue_style( 'stylesheet');
+    wp_register_style( 'wpdrs_css', plugins_url('/styles/wpdrs.css', __FILE__) );
+    wp_enqueue_style( 'wpdrs_css');
 
     //wp_localize_script( 'ajax-script', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' )) );
   }
