@@ -128,13 +128,11 @@ private function parse_log_file( $path , $regexp ){
     if (preg_match( $regexp, $line, $matches )){
       //convert the timestamp for easier sorting
       $matches[0] = str_replace('/',' ',$matches[0]);
-      //error_log(strtotime($matches[0]));
       //this is done only once to set the previous
       if( is_null($unit->time) ){
         $unit->time = $matches[0];
       }
       //if date has changed, write to new date object
-      
       if( $unit->time != $matches[0] ){
         //divide the sum of response times with requestcount
         $unit->avg_resp = floatval($res_sum) / $unit->request_count;
@@ -182,7 +180,7 @@ public function get_chart_data_callback() {
   $log_files = glob( $log_location . $log_file ); // all available logfiles, including gzipped ones
   //$file_count = count( $log_files );
   //$time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
-  $amount = 7; //amount of days
+  $amount = 10; //amount of days
   
   $unit_data = $this->get_log_data( $log_files, $amount );
   
@@ -297,14 +295,19 @@ private function get_log_data( $logfiles, $amount ){
       }
   }*/
   
-    foreach($logfiles as $file){
-      $temp_array[] = $this->parse_log_file( $file, $time_exp );
-      foreach( $temp_array as $time_array ){
-        foreach($time_array as $day){
-          $unit_data[] = $day;
-        }
+  foreach($logfiles as $file){
+    $temp_array = $this->parse_log_file( $file, $time_exp );
+    $this->clean_array($temp_array);
+    foreach($temp_array as $entry){
+      if(count($unit_data) >= $amount){
+        break 2;
+      }
+      else{
+        $unit_data[] = $entry;
       }
     }
+    
+  }
   
 
 
