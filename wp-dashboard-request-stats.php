@@ -95,10 +95,11 @@ public function add_dashboard_widget() {
  * Create the function to output the contents of our Dashboard Widget.
  */
 public function create_widget_content() {
-  // Display canvas.
-  echo '<canvas id="lineChart" style="width:100%; height:100%"></canvas>';
-  echo '<canvas id="barChart" style="width:100%; height:100%"></canvas>';
- 
+  /*// Display canvas.
+  echo '<div id="wpdrsCharts"></div><canvas id="lineChart" style="width:100%; height:100%"></canvas>';
+  echo '<canvas id="barChart" style="width:100%; height:100%"></canvas></div>';
+ */
+  require_once('widget.php');
 }
 
 
@@ -107,9 +108,9 @@ public function create_widget_content() {
  */
 private function parse_log_file( $path , $regexp ){
 
+  //if the log file is gzipped
   if(preg_match('#gz#',$path)){
     $lines = gzfile( $path );
-   //error_log("laama on laamoista laamoin");
   }
   else{
     $lines = file( $path );
@@ -160,7 +161,7 @@ private function parse_log_file( $path , $regexp ){
   }
 
   //divide the sum of response times with requestcount
-  // push last into array
+  //push last into array
   
   $unit->avg_resp = floatval($res_sum) / $unit->request_count;
   $time_array[] = $unit;
@@ -209,9 +210,9 @@ private function clean_array( $array ){
     strtotime($temp_array[$x]);
 
   }*/
-  
   //sort($temp_array);
   
+  //sort the array entries by date
   usort($temp_array, function($item1, $item2) {
     $ts1 = strtotime($item1);
     $ts2 = strtotime($item2);
@@ -249,42 +250,14 @@ private function get_log_data( $logfiles, $amount ){
   if( count($logfiles) == 0 ){
       return;
   }
-  /*else{
-    //check which files are gzipped
-    foreach($logfiles as $key => $file){
-      if(preg_match('#gz#',$file)){
-        unset($logfiles[$key]);
-      }
-    }
-  }
-  unset($file);*/
-  //parse files
-  
-  /*foreach( $logfiles as $file ){
-    $temp_array[] = $this->parse_log_file( $file, $time_exp );
-      foreach( $temp_array as $time_array ){
-        foreach($time_array as $day){
-          $unit_data[] = $day;
-        }
-      }
-  }*/
-  
-  /*foreach($logfiles as $file){
-    $temp_array = $this->parse_log_file( $file, $time_exp );
-    $this->clean_array($temp_array);
-    foreach($temp_array as $entry){
-      $unit_data[] = $entry;
-      if(count($unit_data) >= $amount){
-        break 2;
-      }
-    }
-  }*/
     
   foreach($logfiles as $file){
     //returns the contents of a logfile
     $temp_array = $this->parse_log_file( $file, $time_exp );
     foreach($temp_array as $entry){
       $unit_data[] = $entry;
+      //makes sure the correct amount of days is returned
+      //and that there are no duplicate entries in the array
       if(count($unit_data) >= $amount){
         $unit_data = $this->clean_array($unit_data); 
         if(count($unit_data) >= $amount){
@@ -294,11 +267,8 @@ private function get_log_data( $logfiles, $amount ){
     }
   }
 
-
-
 return $unit_data;
 }
-
 }
 
 $dashboard_request_stats = dashboard_request_stats::get_instance();
