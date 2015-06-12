@@ -16,6 +16,10 @@ $( document ).ready(function(){
   var chartLabel = [];
   var lineValue = [];
   var barValue = [];
+  var myLineChart;
+  var myBarChart;
+  
+  
   
   $.getJSON(ajaxurl, ajaxData, function(json){
 
@@ -77,13 +81,28 @@ $( document ).ready(function(){
       return (sum/array.length);
     }
   
-    var myLineChart = new Chart(context).Line(LineChartData);
-    var myBarChart = new Chart(context2).Bar(BarChartData);
+    myLineChart = new Chart(context).Line(LineChartData);
+    myBarChart = new Chart(context2).Bar(BarChartData);
     //var legend = myLineChart.generateLegend();
     //$( '#chart-legend' ).html(legend);
     $("#lineChartAvg").text('Average: ' + lineAvg);
     $("#barChartAvg").text('Average: ' + barAvg.toFixed(3) + 'ms');
 
+  });
+
+  $("#btnSubmit").click(function(){
+    $.getJSON(ajaxurl, ajaxData, function(json){
+      var ajaxData = {
+        'action': 'get_chart_data','amount':3,
+      };
+
+      $.each(json, function (i,value){
+        chartLabel.push(value.time);
+        lineValue.push(value.request_count);
+        barValue.push(value.avg_resp);
+      });
+      }); 
+    myLineChart.update();
   });
 
 });

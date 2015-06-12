@@ -33,7 +33,10 @@ class time_data {
 
 class dashboard_request_stats{
 
- public static function get_instance() {
+  //the default amount of days to be parsed
+  const DEFAULT_AMOUNT = 10; 
+
+  public static function get_instance() {
     static $drs_instance = null;
     if (null === $drs_instance) {
       $drs_instance = new dashboard_request_stats();
@@ -146,9 +149,7 @@ private function parse_log_file( $path , $regexp ){
       }
 
       if(preg_match( $resp_exp, $line, $matches )){
-
         $res_sum = $res_sum + floatval($matches[0]);
-  
       }
       $unit->request_count++;
 
@@ -157,16 +158,12 @@ private function parse_log_file( $path , $regexp ){
     } elseif (preg_match( "/MISS/" , $line )){
       $day->post_count++;
     }*/
-
+    }
   }
-  }
-
   //divide the sum of response times with requestcount
   //push last into array
-  
   $unit->avg_resp = floatval($res_sum) / $unit->request_count;
   $time_array[] = $unit;
-  
   
   return $time_array;
 }
@@ -179,18 +176,22 @@ public function get_chart_data_callback() {
 
   //define logpath in wp-config
   if( !defined( 'WPDRS_LOGPATH' ) ){
-  $log_location = dirname( ini_get( 'error_log' ) );
+    $log_location = dirname( ini_get( 'error_log' ) );
   }
   else{
-  $log_location = WPDRS_LOGPATH;
+    $log_location = WPDRS_LOGPATH;
   }
   
   $log_file = '/total-access.log*';
   $log_files = glob( $log_location . $log_file ); // all available logfiles, including gzipped ones
-  //$file_count = count( $log_files );
-  //$time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
-  $amount = 10; //amount of days
-  
+ 
+  //if the requested amount of days differs from default
+  if( isset($_POST['amount']) ){
+    $amount = $_POST['amount'];
+  }
+  else{
+    $amount = self::DEFAULT_AMOUNT; //amount of days
+  }
   $unit_data = $this->get_log_data( $log_files, $amount );
   
   echo ( json_encode( $unit_data ) );
@@ -228,8 +229,6 @@ private function clean_array( $array ){
   });
   //usort reverses the values,
   $temp_array  = array_reverse($temp_array,false);
-  
-  //error_log(print_r($temp_array,true),0);
 
   //remove duplicates from array
   foreach( $temp_array as $date ){

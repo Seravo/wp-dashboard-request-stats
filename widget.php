@@ -45,3 +45,8 @@
     <div class="column"><div id="barChartAvg"class="numericData">15ms</div></div>
   </div>  
 </div>
+<div class="demo">
+<br> <br> <br>   
+<input id = "btnSubmit" type="submit"/>
+<br> <br> <br>  
+</div>
