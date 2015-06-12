@@ -138,6 +138,7 @@ private function parse_log_file( $path , $regexp ){
         //divide the sum of response times with requestcount
         $unit->avg_resp = floatval($res_sum) / $unit->request_count;
         // push old into array
+        // push old into array
         $time_array[] = $unit;
         $unit = new time_data;
         $unit->time = $matches[0];
@@ -176,7 +177,14 @@ private function parse_log_file( $path , $regexp ){
  */
 public function get_chart_data_callback() {
 
+  //define logpath in wp-config
+  if( !defined( 'WPDRS_LOGPATH' ) ){
   $log_location = dirname( ini_get( 'error_log' ) );
+  }
+  else{
+  $log_location = WPDRS_LOGPATH;
+  }
+  
   $log_file = '/total-access.log*';
   $log_files = glob( $log_location . $log_file ); // all available logfiles, including gzipped ones
   //$file_count = count( $log_files );
