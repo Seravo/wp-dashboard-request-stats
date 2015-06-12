@@ -1,11 +1,27 @@
 #wpdrs_content{overflow:auto;font-size:10px;}
 
-#wpdrs_content .numericData {
+.numericData {
   height:100%;
+  line-height: 100%;
   width:100%;
   font-size:3em;
-  padding:2px;
+  padding-top: 30%;
+  padding-bottom: 30%;
   float:right;
   overflow:auto;
-  text-align:center;
+  /*text-align:center*/;
+}
+
+.wpdrsContainer {
+  display: table;
+  table-layout: fixed;
+}
+
+.column {
+  display: table-cell;
+  padding:1% 1% 1% 1%;
+}
+
+.row {
+  display: table-row;
 }

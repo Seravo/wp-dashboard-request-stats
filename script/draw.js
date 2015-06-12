@@ -69,8 +69,8 @@ $( document ).ready(function(){
     ]
   };
   
-    var myBarChart = new Chart(context2).Bar(BarChartData);
     var myLineChart = new Chart(context).Line(LineChartData);
+    var myBarChart = new Chart(context2).Bar(BarChartData);
     var legend = myLineChart.generateLegend();
     $( '#chart-legend' ).html(legend);
     

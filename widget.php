@@ -19,8 +19,8 @@
       <div class="numericData">12312312313</div>
 </div>
 </div>*/
-?>
-<div id="wpdrs_content">
+
+/*<div id="wpdrs_content">
 <table>
 
 <tr>
@@ -33,4 +33,15 @@
 </tr>
 
 </table>
+</div>
+*/?>
+<div class="wpdrsContainer">
+  <div class="row">
+    <div class="column"><canvas id="lineChart" style="width:100%; height:150%"></canvas></div>
+    <div class="column"><div class="numericData">15ms</div></div>
+  </div>  
+  <div class="row">
+    <div class="column"><canvas id="barChart" style="width:100%; height:150%"></canvas></div>
+    <div class="column"><div class="numericData">15ms</div></div>
+  </div>  
 </div>
