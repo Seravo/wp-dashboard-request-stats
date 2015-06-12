@@ -91,19 +91,29 @@ $( document ).ready(function(){
   });
 
   $("#btnSubmit").click(function(){
-    $.getJSON(ajaxurl, ajaxData, function(json){
-      var ajaxData = {
-        'action': 'get_chart_data','amount':3,
+    var ajaxData = {
+        'action': 'get_chart_data','amount':3
       };
-
+    $.getJSON(ajaxurl, ajaxData, function(json){
       $.each(json, function (i,value){
         chartLabel.push(value.time);
         lineValue.push(value.request_count);
         barValue.push(value.avg_resp);
       });
+      
+      myLineChart.datasets[0].data = lineValue;
+      myLineChart.update();
       }); 
-    myLineChart.update();
   });
+  
+  function countAvg(array){
+      var sum = 0;
+      for(i = 0; i < array.length ; i++){
+      sum = array[i] + sum;
+      }
+      return (sum/array.length);
+    }
+
 
 });
 })(jQuery);
