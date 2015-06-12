@@ -38,10 +38,10 @@
 <div class="wpdrsContainer">
   <div class="row">
     <div class="column"><canvas id="lineChart" style="width:100%; height:150%"></canvas></div>
-    <div class="column"><div class="numericData">15ms</div></div>
+    <div class="column"><div id="lineChartAvg" class="numericData"></div></div>
   </div>  
   <div class="row">
     <div class="column"><canvas id="barChart" style="width:100%; height:150%"></canvas></div>
-    <div class="column"><div class="numericData">15ms</div></div>
+    <div class="column"><div id="barChartAvg"class="numericData">15ms</div></div>
   </div>  
 </div>

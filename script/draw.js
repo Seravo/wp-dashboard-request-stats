@@ -51,29 +51,38 @@ $( document ).ready(function(){
             pointHighlightStroke: "rgba(151,187,205,1)",
             data: lineValue
         }
-      ]
-    };
+      ]};
 
 
-  var BarChartData = {
-    labels: chartLabel,
-    datasets: [
-        {
+    var BarChartData = {
+      labels: chartLabel,
+      datasets: [{
             label: "Responsetimes (in seconds)",
             fillColor: "rgba(220,220,220,0.5)",
             strokeColor: "rgba(220,220,220,0.8)",
             highlightFill: "rgba(220,220,220,0.75)",
             highlightStroke: "rgba(220,220,220,1)",
             data: barValue
-        }
-    ]
-  };
+      }]
+    };
+    //count the average response times etc
+    var barAvg = countAvg(barValue);
+    var lineAvg = Math.round(countAvg(lineValue));
+   
+    function countAvg(array){
+      var sum = 0;
+      for(i = 0; i < array.length ; i++){
+      sum = array[i] + sum;
+      }
+      return (sum/array.length);
+    }
   
     var myLineChart = new Chart(context).Line(LineChartData);
     var myBarChart = new Chart(context2).Bar(BarChartData);
-    var legend = myLineChart.generateLegend();
-    $( '#chart-legend' ).html(legend);
-    
+    //var legend = myLineChart.generateLegend();
+    //$( '#chart-legend' ).html(legend);
+    $("#lineChartAvg").text('Average: ' + lineAvg);
+    $("#barChartAvg").text('Average: ' + barAvg.toFixed(3) + 'ms');
 
   });
 
