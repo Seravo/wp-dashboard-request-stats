@@ -1,27 +1,50 @@
-#wpdrs_content{overflow:auto;font-size:10px;}
-
-.numericData {
-  height:100%;
-  line-height: 100%;
-  width:100%;
-  font-size:3em;
-  padding-top: 30%;
-  padding-bottom: 30%;
-  float:right;
-  overflow:auto;
-  /*text-align:center*/;
-}
 
 .wpdrsContainer {
-  display: table;
-  table-layout: fixed;
+  width: 100%;
 }
 
-.column {
-  display: table-cell;
-  padding:1% 1% 1% 1%;
+/* Bottom chart */
+#barChart {
+	width: 100%;
+	height: 200px;
+	margin-top: 4px;
+	
+	/* just to visualize the area */
+	border: 1px solid black;
 }
 
-.row {
-  display: table-row;
+/* Bottom chart average value */
+#barChartAvg {
+	width: 100%;
+	height: 20px;
+	text-align: center;
+	line-height: 20px; /* to align the text vertically this must be the same as height */
+	
+	/* just to visualize the area */
+	border: 1px solid black;
 }
+
+/* Top chart */
+#lineChart {
+	width: 100%;
+	height: 200px;
+	/* just to visualize the area */
+	border: 1px solid black;
+}
+
+/* Bottom chart average value */
+#lineChartAvg {
+	height: 20px;
+	width: 100%;
+	text-align: center;
+	line-height: 20px; /* to align the text vertically this must be the same as height */
+	
+	/* just to visualize the area */
+	border: 1px solid black;
+}
+
+#submit-button {
+	margin-top: 4px;
+}
+
+
