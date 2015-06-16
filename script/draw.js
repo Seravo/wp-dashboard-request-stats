@@ -16,8 +16,8 @@ $( document ).ready(function(){
   var chartLabel = [];
   var lineValue = [];
   var barValue = [];
-  var myLineChart;
-  var myBarChart;
+  var myLineChart; //shows amount of requests
+  var myBarChart; //shows responsetimes
   
   
   
@@ -81,12 +81,12 @@ $( document ).ready(function(){
       return (sum/array.length);
     }
   
-    myLineChart = new Chart(context).Line(LineChartData);
+    myLineChart = new Chart(context).Line(LineChartData); 
     myBarChart = new Chart(context2).Bar(BarChartData);
     //var legend = myLineChart.generateLegend();
     //$( '#chart-legend' ).html(legend);
-    $("#lineChartAvg").text('Average: ' + lineAvg);
-    $("#barChartAvg").text('Average: ' + barAvg.toFixed(3) + 'ms');
+    $("#lineChartAvg").text('Amount of requests | Average: ' + lineAvg);
+    $("#barChartAvg").text('Responsetimes | Average: ' + barAvg.toFixed(3) + 'ms');
 
   });
 

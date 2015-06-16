@@ -184,14 +184,13 @@ public function get_chart_data_callback() {
   
   $log_file = '/total-access.log*';
   $log_files = glob( $log_location . $log_file ); // all available logfiles, including gzipped ones
- 
+  $amount = self::DEFAULT_AMOUNT;
+  
   //if the requested amount of days differs from default
-  if( isset($_POST['amount']) ){
-    $amount = $_POST['amount'];
+  if( isset($_GET['amount']) ){
+    $amount = $_GET['amount'];
   }
-  else{
-    $amount = self::DEFAULT_AMOUNT; //amount of days
-  }
+  
   $unit_data = $this->get_log_data( $log_files, $amount );
   
   echo ( json_encode( $unit_data ) );
