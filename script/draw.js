@@ -4,8 +4,8 @@
 (function ($) {
 $( document ).ready(function(){
   //get context
-  var context = $("#lineChart").get(0).getContext("2d");
-  var context2 = $("#barChart").get(0).getContext("2d");
+  //var context = $("#lineChart").get(0).getContext("2d");
+  //var context2 = $("#barChart").get(0).getContext("2d");
   //doesn't work, fix it later:
   //var options = { legendTemplate : "<ul id=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].pointColor%>\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>" };
 
@@ -17,9 +17,7 @@ $( document ).ready(function(){
   var lineValue = [];
   var barValue = [];
   var myLineChart; //shows amount of requests
-  var myBarChart; //shows responsetimes
-  
-  
+  var myBarChart; //shows response times
   
   $.getJSON(ajaxurl, ajaxData, function(json){
 
@@ -29,10 +27,43 @@ $( document ).ready(function(){
       lineValue.push(value.request_count);
       barValue.push(value.avg_resp);
     });
+    drawCharts(lineValue,barValue,chartLabel);
 
-    //chart options
-    var LineChartData = {
-      labels: chartLabel,
+  });
+  
+  //alter the amount of data shown
+  $("#btnSubmit").click(function(){
+    var ajaxData = {
+        'action': 'get_chart_data','amount':3
+      };
+
+      //$('#lineChart').remove();
+      //$('#lineChartCont').append('<canvas id="lineChart"><canvas>');
+      for(i=0; i < myLineChart.datasets[0].points.length; i++){
+     myLineChart.removeData(); 
+      
+      }
+      myLineChart.labels.length = 0;
+      chartLabel.length = 0;
+      lineValue.length = 0;
+      barValue.length = 0;
+    $.getJSON(ajaxurl, ajaxData, function(json){
+      $.each(json, function (i,value){
+        chartLabel.push(value.time);
+        lineValue.push(value.request_count);
+        barValue.push(value.avg_resp);
+      });
+      });
+    
+    
+    drawCharts(lineValue,barValue,chartLabel);
+    
+  });
+  
+  function drawCharts(lineData, barData, labels){
+   
+   var LineChartData = {
+      labels: labels,
       datasets: [
        /** {
             label: "PHP",
@@ -53,66 +84,44 @@ $( document ).ready(function(){
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
-            data: lineValue
+            data: lineData
         }
       ]};
-
-
+    
     var BarChartData = {
-      labels: chartLabel,
+      labels: labels,
       datasets: [{
             label: "Responsetimes (in seconds)",
             fillColor: "rgba(220,220,220,0.5)",
             strokeColor: "rgba(220,220,220,0.8)",
             highlightFill: "rgba(220,220,220,0.75)",
             highlightStroke: "rgba(220,220,220,1)",
-            data: barValue
+            data: barData
       }]
     };
-    //count the average response times etc
-    var barAvg = countAvg(barValue);
-    var lineAvg = Math.round(countAvg(lineValue));
-   
-    function countAvg(array){
-      var sum = 0;
-      for(i = 0; i < array.length ; i++){
-      sum = array[i] + sum;
-      }
-      return (sum/array.length);
-    }
-  
+    
+    var context = $("#lineChart").get(0).getContext("2d");
+    var context2 = $("#barChart").get(0).getContext("2d");
+    
+    var barAvg = countAvg(barData);
+    var lineAvg = Math.round(countAvg(lineData));
     myLineChart = new Chart(context).Line(LineChartData); 
     myBarChart = new Chart(context2).Bar(BarChartData);
+    
     //var legend = myLineChart.generateLegend();
     //$( '#chart-legend' ).html(legend);
     $("#lineChartAvg").text('Amount of requests | Average: ' + lineAvg);
     $("#barChartAvg").text('Responsetimes | Average: ' + barAvg.toFixed(3) + 'ms');
-
-  });
-
-  $("#btnSubmit").click(function(){
-    var ajaxData = {
-        'action': 'get_chart_data','amount':3
-      };
-    $.getJSON(ajaxurl, ajaxData, function(json){
-      $.each(json, function (i,value){
-        chartLabel.push(value.time);
-        lineValue.push(value.request_count);
-        barValue.push(value.avg_resp);
-      });
-      
-      myLineChart.datasets[0].data = lineValue;
-      myLineChart.update();
-      }); 
-  });
+  
+  }
   
   function countAvg(array){
-      var sum = 0;
-      for(i = 0; i < array.length ; i++){
+    var sum = 0;
+    for(i = 0; i < array.length ; i++){
       sum = array[i] + sum;
-      }
-      return (sum/array.length);
     }
+    return (sum/array.length);
+  }
 
 
 });

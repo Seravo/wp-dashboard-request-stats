@@ -5,46 +5,46 @@
 
 /* Bottom chart */
 #barChart {
-	width: 100%;
-	height: 200px;
-	margin-top: 4px;
-	
-	/* just to visualize the area */
-	border: 1px solid black;
+  width: 100%;
+  height: 200px;
+  margin-top: 4px;
+  
+  /* just to visualize the area */
+  border: 1px solid black;
 }
 
 /* Bottom chart average value */
 #barChartAvg {
-	width: 100%;
-	height: 20px;
-	text-align: center;
-	line-height: 20px; /* to align the text vertically this must be the same as height */
-	
-	/* just to visualize the area */
-	border: 1px solid black;
+  width: 100%;
+  height: 20px;
+  text-align: center;
+  line-height: 20px; /* to align the text vertically this must be the same as height */
+  
+  /* just to visualize the area */
+  border: 1px solid black;
 }
 
 /* Top chart */
 #lineChart {
-	width: 100%;
-	height: 200px;
-	/* just to visualize the area */
-	border: 1px solid black;
+  width: 100%;
+  height: 200px;
+  /* just to visualize the area */
+  border: 1px solid black;
 }
 
 /* Bottom chart average value */
 #lineChartAvg {
-	height: 20px;
-	width: 100%;
-	text-align: center;
-	line-height: 20px; /* to align the text vertically this must be the same as height */
-	
-	/* just to visualize the area */
-	border: 1px solid black;
+  height: 20px;
+  width: 100%;
+  text-align: center;
+  line-height: 20px; /* to align the text vertically this must be the same as height */
+  
+  /* just to visualize the area */
+  border: 1px solid black;
 }
 
 #submit-button {
-	margin-top: 4px;
+  margin-top: 4px;
 }
 
 
