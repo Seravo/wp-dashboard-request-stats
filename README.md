@@ -1,4 +1,5 @@
-#wp-dashboard-request-stats:
+# wp-dashboard-request-stats:
+[![Build Status](https://travis-ci.org/Seravo/wp-dashboard-request-stats.svg?branch=master)](https://travis-ci.org/Seravo/wp-dashboard-request-stats)
 
 A Wordpress plugin for reading and viewing access log data.
 
