@@ -5,7 +5,7 @@ if ( ! $_tests_dir ) {
 	$_tests_dir = '/tmp/wordpress-tests-lib';
 }
 
-define('PLUGIN_FOLDER','wp-dashboard-request-stats')
+define('PLUGIN_FOLDER','wp-dashboard-request-stats');
 define('PLUGIN_NAME','wp-dashboard-request-stats.php');
 define('PLUGIN_PATH',PLUGIN_FOLDER.'/'.PLUGIN_NAME);
 
