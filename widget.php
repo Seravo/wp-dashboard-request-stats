@@ -3,10 +3,10 @@
 
     
     <div id="lineChartCont"><canvas id="lineChart"></canvas></div>
-    <div id="lineChartAvg">Amount of requests | Average: 11ms</div>
+    <div id="lineChartAvg">Number of requests per day (average X)</div>
    
     <div id="barChartCont"><canvas id="barChart"></canvas></div>
-    <div id="barChartAvg">Responsetimes | Average: 15ms</div>
+    <div id="barChartAvg">Average response time per day (week average X ms)"</div>
     
     <div id="submit-button">
 	<input id="btnSubmit" type="submit"/>

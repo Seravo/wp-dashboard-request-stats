@@ -17,8 +17,14 @@ $( document ).ready(function(){
   var lineValue = [];
   var barValue = [];
   var myLineChart; //shows amount of requests
-  var myBarChart; //shows response times
+  var myBarChart; //shows response time
+  var context;
+  var context2;
+  var barAvg;
+  var lineAvg;
   
+  
+  //the first time the chart is drawn
   $.getJSON(ajaxurl, ajaxData, function(json){
 
     $.each(json, function (i,value){
@@ -27,43 +33,9 @@ $( document ).ready(function(){
       lineValue.push(value.request_count);
       barValue.push(value.avg_resp);
     });
-    drawCharts(lineValue,barValue,chartLabel);
 
-  });
-  
-  //alter the amount of data shown
-  $("#btnSubmit").click(function(){
-    var ajaxData = {
-        'action': 'get_chart_data','amount':3
-      };
-
-      //$('#lineChart').remove();
-      //$('#lineChartCont').append('<canvas id="lineChart"><canvas>');
-      for(i=0; i < myLineChart.datasets[0].points.length; i++){
-     myLineChart.removeData(); 
-      
-      }
-      myLineChart.labels.length = 0;
-      chartLabel.length = 0;
-      lineValue.length = 0;
-      barValue.length = 0;
-    $.getJSON(ajaxurl, ajaxData, function(json){
-      $.each(json, function (i,value){
-        chartLabel.push(value.time);
-        lineValue.push(value.request_count);
-        barValue.push(value.avg_resp);
-      });
-      });
-    
-    
-    drawCharts(lineValue,barValue,chartLabel);
-    
-  });
-  
-  function drawCharts(lineData, barData, labels){
-   
    var LineChartData = {
-      labels: labels,
+      labels: chartLabel,
       datasets: [
        /** {
             label: "PHP",
@@ -84,36 +56,63 @@ $( document ).ready(function(){
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
-            data: lineData
+            data: lineValue
         }
       ]};
     
     var BarChartData = {
-      labels: labels,
+      labels: chartLabel,
       datasets: [{
             label: "Responsetimes (in seconds)",
             fillColor: "rgba(220,220,220,0.5)",
             strokeColor: "rgba(220,220,220,0.8)",
             highlightFill: "rgba(220,220,220,0.75)",
             highlightStroke: "rgba(220,220,220,1)",
-            data: barData
+            data: barValue
       }]
     };
     
-    var context = $("#lineChart").get(0).getContext("2d");
-    var context2 = $("#barChart").get(0).getContext("2d");
+    context = $("#lineChart").get(0).getContext("2d");
+    context2 = $("#barChart").get(0).getContext("2d");
     
-    var barAvg = countAvg(barData);
-    var lineAvg = Math.round(countAvg(lineData));
+    barAvg = countAvg(barValue);
+    lineAvg = Math.round(countAvg(lineValue));
     myLineChart = new Chart(context).Line(LineChartData); 
     myBarChart = new Chart(context2).Bar(BarChartData);
     
     //var legend = myLineChart.generateLegend();
     //$( '#chart-legend' ).html(legend);
-    $("#lineChartAvg").text('Amount of requests | Average: ' + lineAvg);
-    $("#barChartAvg").text('Responsetimes | Average: ' + barAvg.toFixed(3) + 'ms');
+    $("#lineChartAvg").text('Number of requests per day (average ' + lineAvg + ')');
+    $("#barChartAvg").text('Average response time per day (week average ' + barAvg.toFixed(3) + 'ms )');
+
+
+  });
   
-  }
+  //alter the amount of data shown
+  $("#btnSubmit").click(function(){
+    var ajaxData = {
+        'action': 'get_chart_data','amount':3
+      };
+      var newChartLabel = [];
+      var newLineValue = [];
+      var newBarValue = [];
+    
+    $.getJSON(ajaxurl, ajaxData, function(json){
+      $.each(json, function (i,value){
+        newChartLabel.push(value.time);
+        newLineValue.push(value.request_count);
+        newBarValue.push(value.avg_resp);
+      });
+      i = 0;
+      while (i < newBarValue.length) {
+      myBarChart[0].datasets[0].bars[i].value = newBarValue[i];
+      myBarChart[0].datasets[0].bars[i].label = newChartLabel[i];
+      myBarChart[0].update();
+      i++;
+      }
+    });
+   
+  });
   
   function countAvg(array){
     var sum = 0;
