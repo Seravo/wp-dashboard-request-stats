@@ -7,17 +7,17 @@
    
     <div id="barChartCont"><canvas id="barChart"></canvas></div>
     <div id="barChartAvg">Average response time per day ( 7 days average X s)"</div>
-    
-    <div class="submit-button">
-    <input id="btnSubmit1" type="submit" value="3 Days" />
- 
-    <div class="submit-button">
-    <input id="btnSubmit2" type="submit" value="7 days" />
-    
-
-    <input id="btnSubmit3" type="submit" value="30 days" />
+    <div id="buttonRow"></div>
+      <div class="submit-button">
+        <input id="btnSubmit1" type="submit" value="3 Days" />
+      </div>
+      <div class="submit-button">
+        <input id="btnSubmit2" type="submit" value="7 days" />
+      </div>
+      <div class="submit-button">
+        <input id="btnSubmit3" type="submit" value="30 days" />
+      </div>
     </div>
-
 </div>
 
 

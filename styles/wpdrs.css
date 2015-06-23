@@ -43,9 +43,19 @@
   border: 1px solid black;
 }
 
-.submit-button {
-  margin-top: 4px;
-  width: 50px;
+#buttonRow{
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+.submit-button {
+  width: 100px;
+  display: inline-block;
+}
 
+.submit-button input{
+  width: 100px;
+  margin-left:auto;
+  margin-right:auto;
+}
