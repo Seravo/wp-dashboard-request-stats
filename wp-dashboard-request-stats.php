@@ -34,7 +34,7 @@ class time_data {
 class dashboard_request_stats{
 
   //the default amount of days to be parsed
-  const DEFAULT_AMOUNT = 10; 
+  const DEFAULT_AMOUNT = 7; 
 
   public static function get_instance() {
     static $drs_instance = null;

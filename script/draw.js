@@ -59,8 +59,8 @@ $( document ).ready(function(){
     //calculate and show the averages of received data
     barAvg = countAvg(barValue);
     lineAvg = Math.round(countAvg(lineValue));
-    $("#lineChartAvg").text('Number of requests per day ( average ' + lineAvg + ' )');
-    $("#barChartAvg").text('Average response time per day ( week average ' + barAvg.toFixed(3) + 's )');
+    $("#lineChartAvg").text('Number of requests / 7 days | ( Average: ' + lineAvg + ' )');
+    $("#barChartAvg").text('Average response time / 7 days | ( 7 days average: ' + barAvg.toFixed(3) + 's )');
   });
   
   //button functionality
@@ -130,8 +130,8 @@ $( document ).ready(function(){
       //calculate and show the averages of received data
       barAvg = countAvg(barValue);
       lineAvg = Math.round(countAvg(lineValue));
-      $("#lineChartAvg").text('Number of requests per day ( average ' + lineAvg + ' )');
-      $("#barChartAvg").text('Average response time per day ( weekly average ' + barAvg.toFixed(3) + 's )');
+      $("#lineChartAvg").text('Number of requests / ' + amount +' days | ( Average: ' + lineAvg + ' )');
+      $("#barChartAvg").text('Average response time per ' + amount + ' days | ( ' + amount + ' days average: ' + barAvg.toFixed(3) + 's )');
     
     });
   }
