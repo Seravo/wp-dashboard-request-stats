@@ -9,9 +9,15 @@
     <div id="barChartAvg">Average response time per day (week average X s)"</div>
     
     <div id="submit-button">
-	<input id="btnSubmit" type="submit"/>
+	<input id="btnSubmit1" type="submit" value="3 Days" />
     </div>
-    
+  <div id="submit-button">
+	<input id="btnSubmit2" type="submit" value="7 days" />
+    </div>
+  <div id="submit-button">
+	<input id="btnSubmit3" type="submit" value="30 days" />
+    </div>
+
 </div>
 
 

@@ -23,18 +23,18 @@ $( document ).ready(function(){
       lineValue.push(value.request_count);
       barValue.push(value.avg_resp);
     });
-  
+    //define chart specific stuff here
     lineData = {
       labels: chartLabel,
       datasets: [
         {
             //label: "Avg requests",
-            fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
+            fillColor: "rgba(40,43,42,0.7)",
+            strokeColor: "rgba(40,43,42,1)",
+            pointColor: "rgba(40,43,42,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(220,220,220,1)",
+            pointHighlightStroke: "rgba(150,7,7,1)",
             data: lineValue
         }
       ]
@@ -44,23 +44,41 @@ $( document ).ready(function(){
       labels: chartLabel,
       datasets: [{
             //label: "Responsetimes (in seconds)",
-            fillColor: "rgba(220,220,220,0.5)",
-            strokeColor: "rgba(220,220,220,0.8)",
-            highlightFill: "rgba(220,220,220,0.75)",
-            highlightStroke: "rgba(220,220,220,1)",
+            fillColor: "rgba(40,43,42,0.7)",
+            strokeColor: "rgba(40,43,42,1)",
+            highlightFill: "rgba(150,7,7,1)",
+            highlightStroke: "rgba(40,43,42,1)",
             data: barValue
       }]
     };
     
-    
+    //draw charts with supplied data
     myLineChart = new Chart(lineCtx).Line(lineData,{bezierCurve:false});
     myBarChart = new Chart(barCtx).Bar(barData);
+    
+    //calculate and show the averages of received data
+    barAvg = countAvg(barValue);
+    lineAvg = Math.round(countAvg(lineValue));
+    $("#lineChartAvg").text('Number of requests per day ( average ' + lineAvg + ' )');
+    $("#barChartAvg").text('Average response time per day ( week average ' + barAvg.toFixed(3) + 's )');
+  
   
   });
   
-  $("#btnSubmit").click(function(){
-    
-    ajaxData = {'action': 'get_chart_data','amount' : 3}; 
+  $("#btnSubmit1").click(function(){
+    submitDays(3);
+  });
+  $("#btnSubmit2").click(function(){
+    submitDays(7);
+  });
+  $("#btnSubmit3").click(function(){
+    submitDays(30);
+  });  
+  
+  
+  function submitDays( amount ){
+    //
+    ajaxData = {'action': 'get_chart_data','amount' : amount}; 
     
     //destroy the charts and clear canvases for updated values
     myLineChart.destroy();
@@ -73,6 +91,7 @@ $( document ).ready(function(){
     lineValue.length = 0;
     barValue.length = 0;
     
+    //fetch the wanted amount of data
     $.getJSON(ajaxurl, ajaxData, function(json){
       $.each(json, function (i,value){
         chartLabel.push(value.time);
@@ -84,10 +103,10 @@ $( document ).ready(function(){
       labels: chartLabel,
       datasets: [{
             //label: "Responsetimes (in seconds)",
-            fillColor: "rgba(220,220,220,0.5)",
-            strokeColor: "rgba(220,220,220,0.8)",
-            highlightFill: "rgba(220,220,220,0.75)",
-            highlightStroke: "rgba(220,220,220,1)",
+            fillColor: "rgba(40,43,42,0.7)",
+            strokeColor: "rgba(40,43,42,1)",
+            highlightFill: "rgba(150,7,7,1)",
+            highlightStroke: "rgba(40,43,42,1)",
             data: barValue
       }]
       };
@@ -97,25 +116,27 @@ $( document ).ready(function(){
       datasets: [
         {
             //label: "Avg requests",
-            fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
+            fillColor: "rgba(40,43,42,0.7)",
+            strokeColor: "rgba(40,43,42,1)",
+            pointColor: "rgba(40,43,42,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(220,220,220,1)",
+            pointHighlightStroke: "rgba(150,7,7,1)",
             data: lineValue
         }
         ]};
       
       myLineChart = new Chart(lineCtx).Line(lineData,{bezierCurve:false});
       myBarChart = new Chart(barCtx).Bar(barData);
+      //calculate and show the averages of received data
+      barAvg = countAvg(barValue);
+      lineAvg = Math.round(countAvg(lineValue));
+      $("#lineChartAvg").text('Number of requests per day ( average ' + lineAvg + ' )');
+      $("#barChartAvg").text('Average response time per day ( week average ' + barAvg.toFixed(3) + 's )');
+    
     });
     
-        
-        
-    
-    
-  });
+  }
   
   
   
@@ -246,7 +267,7 @@ $( document ).ready(function(){
     });
    
   });
-  
+*/  
   function countAvg(array){
     var sum = 0;
     for(i = 0; i < array.length ; i++){
@@ -255,6 +276,6 @@ $( document ).ready(function(){
     return (sum/array.length);
   }
 
-*/
+
 });
 })(jQuery);
