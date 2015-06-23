@@ -16,6 +16,8 @@ $( document ).ready(function(){
   var barData;
   var myLineChart;
   
+  Chart.defaults.global.responsive = true;
+  
   //fetch ajax-data as json
   $.getJSON(ajaxurl, ajaxData, function(json){
     $.each(json, function (i,value){
@@ -29,12 +31,12 @@ $( document ).ready(function(){
       datasets: [
         {
             //label: "Avg requests",
-            fillColor: "rgba(40,43,42,0.7)",
+            fillColor: "rgba(40,43,42,0.2)",
             strokeColor: "rgba(40,43,42,1)",
             pointColor: "rgba(40,43,42,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(150,7,7,1)",
+            pointHighlightStroke: "rgba(40,43,42,1)",
             data: lineValue
         }
       ]
@@ -44,9 +46,9 @@ $( document ).ready(function(){
       labels: chartLabel,
       datasets: [{
             //label: "Responsetimes (in seconds)",
-            fillColor: "rgba(40,43,42,0.7)",
+            fillColor: "rgba(40,43,42,0.2)",
             strokeColor: "rgba(40,43,42,1)",
-            highlightFill: "rgba(150,7,7,1)",
+            highlightFill: "rgba(40,43,42,1)",
             highlightStroke: "rgba(40,43,42,1)",
             data: barValue
       }]
@@ -102,9 +104,9 @@ $( document ).ready(function(){
       labels: chartLabel,
       datasets: [{
             //label: "Responsetimes (in seconds)",
-            fillColor: "rgba(40,43,42,0.7)",
+            fillColor: "rgba(40,43,42,0.2)",
             strokeColor: "rgba(40,43,42,1)",
-            highlightFill: "rgba(150,7,7,1)",
+            highlightFill: "rgba(40,43,42,1)",
             highlightStroke: "rgba(40,43,42,1)",
             data: barValue
       }]
@@ -115,12 +117,12 @@ $( document ).ready(function(){
       datasets: [
         {
             //label: "Avg requests",
-            fillColor: "rgba(40,43,42,0.7)",
+            fillColor: "rgba(40,43,42,0.2)",
             strokeColor: "rgba(40,43,42,1)",
             pointColor: "rgba(40,43,42,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(150,7,7,1)",
+            pointHighlightStroke: "rgba(40,43,42,1)",
             data: lineValue
         }
         ]};
