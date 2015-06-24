@@ -18,8 +18,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-//define('__ROOT__', dirname(__FILE__));
-
 
 /**
  * Class to store parsed data
@@ -128,7 +126,6 @@ class dashboard_request_stats{
           //divide the sum of response times with requestcount
           $unit->avg_resp = floatval($res_sum) / $unit->request_count;
           // push old into array
-          // push old into array
           $time_array[] = $unit;
           $unit = new time_data;
           $unit->time = $matches[0];
@@ -179,7 +176,6 @@ class dashboard_request_stats{
   /**
   * Remove duplicates and make sure the entries in the array are in proper order
   */
-
   private function clean_array( $array ){
   
     if(!is_array($array)){
@@ -197,12 +193,11 @@ class dashboard_request_stats{
   
     $temp_array = array_unique($temp_array);
     $temp_array = array_values($temp_array);
-  //sort the array entries by date
-  /*for( $x = 0; $x < count($temp_array); $x++ ){
+    //sort the array entries by date
+    /*for( $x = 0; $x < count($temp_array); $x++ ){
     strtotime($temp_array[$x]);
-
-  }*/
-  //sort($temp_array);
+    }*/
+    //sort($temp_array);
   
     //sort the array entries by date
     usort($temp_array, function($item1, $item2) {
@@ -210,6 +205,7 @@ class dashboard_request_stats{
       $ts2 = strtotime($item2);
       return $ts2 - $ts1;
     });
+    
     //usort reverses the values,
     $temp_array  = array_reverse($temp_array,false);
 
@@ -228,11 +224,11 @@ class dashboard_request_stats{
     $array = $temp_array2;
     return $array;
   }
+  
   /**
   * Return desired amount of data specified in days
   * Eats an array
   */
-
   private function get_log_data( $logfiles, $amount ){
     $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
     $temp_array = array();
