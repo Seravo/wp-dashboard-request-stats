@@ -5,7 +5,7 @@
 * Description: Draws a graph from access log data into a dashboard widget
 * Author: Tari Zahabi / Seravo Oy
 * Author URI: http://seravo.fi
-* Version: 0.0.1
+* Version: 0.1.0
 * License: GPLv2 or later
 */
 /** Copyright 2014 Seravo Oy
@@ -95,7 +95,7 @@ class dashboard_request_stats{
   /**
   * Parse a logfile and return an array of day_data objects
   */
-  private function parse_log_file( $path , $regexp ){
+  private function parse_log_file( $path , $regex_array ){
     //if the log file is gzipped
     if(preg_match('#gz#',$path)){
       $lines = gzfile( $path );
@@ -106,42 +106,29 @@ class dashboard_request_stats{
     if($lines==false){
       return false;
     }
-
+    
     $unit = new time_data;
     $time_array = array();
-    $matches;
-    $resp_exp= "#[0-9]+.[0-9]+$#";
-    $res_sum=0;
+    
     foreach ( $lines as $line ){
-      //find and extract timestamp
-      if (preg_match( $regexp, $line, $matches )){
-        //convert the timestamp for easier sorting
-        $matches[0] = str_replace('/',' ',$matches[0]);
-        //this is done only once to set the previous
-        if( is_null($unit->time) ){
-          $unit->time = $matches[0];
-        }
-        //if date has changed, write to new date object
-        if( $unit->time != $matches[0] ){
-          //divide the sum of response times with requestcount
-          $unit->avg_resp = floatval($res_sum) / $unit->request_count;
-          // push old into array
-          $time_array[] = $unit;
-          $unit = new time_data;
-          $unit->time = $matches[0];
-          $res_sum=0;
-        }
-
-        if(preg_match( $resp_exp, $line, $matches )){
-          $res_sum = $res_sum + floatval($matches[0]);
-        }
-        $unit->request_count++;
-      }
+    //do the parsing
+    $temmi = $this->wpdrs_parser($line,$regex_array);
+    $temmi['time'] = str_replace('/',' ',$temmi['time']);
+  
+    if(is_null($unit->time))
+      $unit->time = $temmi['time'];
+    if($unit->time != $temmi['time']){
+      $unit->avg_resp = $unit->avg_resp / $unit->request_count;
+      $time_array[] = $unit;
+      $unit = new time_data;
+    }  
+    $unit->request_count++;
+    $unit->avg_resp = $unit->avg_resp + $temmi['response']; 
+  
     }
-    //divide the sum of response times with requestcount
-    //push last into array
-    $unit->avg_resp = floatval($res_sum) / $unit->request_count;
+    $unit->avg_resp = $unit->avg_resp / $unit->request_count;
     $time_array[] = $unit;
+    
     return $time_array;
   }
 
@@ -230,7 +217,8 @@ class dashboard_request_stats{
   * Eats an array
   */
   private function get_log_data( $logfiles, $amount ){
-    $time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
+    //$time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
+    $regex_array = $regexes = array('time'=>'#[0-3][0-9]/.{3}/20[0-9]{2}#','response'=>"#[0-9]+.[0-9]+$#");
     $temp_array = array();
     $unit_data = array();
     if( count($logfiles) == 0 ){
@@ -239,7 +227,7 @@ class dashboard_request_stats{
     
     foreach($logfiles as $file){
       //returns the contents of a logfile
-      $temp_array = $this->parse_log_file( $file, $time_exp );
+      $temp_array = $this->parse_log_file( $file, $regex_array );
       foreach($temp_array as $entry){
         $unit_data[] = $entry;
         //makes sure the correct amount of days is returned
@@ -255,6 +243,19 @@ class dashboard_request_stats{
 
     return $unit_data;
   }
+
+
+  private function wpdrs_parser( $line, $regex_array){
+    $matches;
+    $results = array();
+    foreach($regex_array as $key => $exp){
+      if(preg_match($exp, $line,$matches)){
+        $results[$key] = $matches[0];
+      }
+    }
+    return $results;
+  }
+
 }
 
 $dashboard_request_stats = dashboard_request_stats::get_instance();
