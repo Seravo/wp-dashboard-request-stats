@@ -1,7 +1,8 @@
 # wp-dashboard-request-stats:
 [![Build Status](https://travis-ci.org/Seravo/wp-dashboard-request-stats.svg?branch=master)](https://travis-ci.org/Seravo/wp-dashboard-request-stats)
 
-A Wordpress plugin for reading and viewing access log data.
+A Wordpress plugin for reading and viewing accesslog data. At the moment the plugin extracts the amount requests per day and the average
+responsetime per day, with hardcoded regular expressions.
 
 
 ##Installation
