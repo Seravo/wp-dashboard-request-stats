@@ -31,7 +31,7 @@ $( document ).ready(function(){
       datasets: [
         {
             //label: "Avg requests",
-            fillColor: "rgba(40,43,42,0.2)",
+            fillColor: "rgba(40,43,42,0.4)",
             strokeColor: "rgba(40,43,42,1)",
             pointColor: "rgba(40,43,42,1)",
             pointStrokeColor: "#fff",
@@ -46,7 +46,7 @@ $( document ).ready(function(){
       labels: chartLabel,
       datasets: [{
             //label: "Responsetimes (in seconds)",
-            fillColor: "rgba(40,43,42,0.2)",
+            fillColor: "rgba(40,43,42,0.4)",
             strokeColor: "rgba(40,43,42,1)",
             highlightFill: "rgba(40,43,42,1)",
             highlightStroke: "rgba(40,43,42,1)",
