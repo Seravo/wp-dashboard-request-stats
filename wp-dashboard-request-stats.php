@@ -32,7 +32,9 @@ class time_data {
 class dashboard_request_stats{
 
   //the default amount of days to be parsed
-  const DEFAULT_AMOUNT = 7; 
+  const DEFAULT_AMOUNT = 7;
+  const DEFAULT_TIME_REGEX = "#[0-3][0-9]/.{3}/20[0-9]{2}#"; //regex for timestamp
+  const DEFAULT_RESPONSE_REGEX = "#[0-9]+.[0-9]+$#"; //regex for responsetime
 
   public static function get_instance() {
     static $drs_instance = null;
@@ -112,19 +114,18 @@ class dashboard_request_stats{
     
     foreach ( $lines as $line ){
     //do the parsing
-    $temmi = $this->wpdrs_parser($line,$regex_array);
-    $temmi['time'] = str_replace('/',' ',$temmi['time']);
+    $parsed_line = $this->wpdrs_parser($line,$regex_array);
+    $parsed_line['time'] = str_replace('/',' ',$parsed_line['time']);
   
     if(is_null($unit->time))
-      $unit->time = $temmi['time'];
-    if($unit->time != $temmi['time']){
+      $unit->time = $parsed_line['time'];
+    if($unit->time != $parsed_line['time']){
       $unit->avg_resp = $unit->avg_resp / $unit->request_count;
       $time_array[] = $unit;
       $unit = new time_data;
     }  
     $unit->request_count++;
-    $unit->avg_resp = $unit->avg_resp + $temmi['response']; 
-  
+    $unit->avg_resp = $unit->avg_resp + $parsed_line['response'];
     }
     $unit->avg_resp = $unit->avg_resp / $unit->request_count;
     $time_array[] = $unit;
@@ -218,7 +219,7 @@ class dashboard_request_stats{
   */
   private function get_log_data( $logfiles, $amount ){
     //$time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
-    $regex_array = $regexes = array('time'=>'#[0-3][0-9]/.{3}/20[0-9]{2}#','response'=>"#[0-9]+.[0-9]+$#");
+    $regex_array = array('time' => self::DEFAULT_TIME_REGEX,'response'=>self::DEFAULT_RESPONSE_REGEX);
     $temp_array = array();
     $unit_data = array();
     if( count($logfiles) == 0 ){
@@ -255,7 +256,6 @@ class dashboard_request_stats{
     }
     return $results;
   }
-
 }
 
 $dashboard_request_stats = dashboard_request_stats::get_instance();

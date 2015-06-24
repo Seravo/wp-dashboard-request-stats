@@ -12,3 +12,9 @@ install it via wp-admin
 ###or
 
 Copy the folder wp-dashboard-request-stats including it's contents to you WordPress plugins directory.
+
+Also remember to add the following to wp-config.php
+
+```
+define('WPDRS_LOGPATH','YOUR_LOG_PATH_HERE');
+```

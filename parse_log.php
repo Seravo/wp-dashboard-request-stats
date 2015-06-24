@@ -66,11 +66,9 @@ foreach ( $lines as $line ){
   $unit->avg_resp = $unit->avg_resp / $unit->request_count;
   $time_array[] = $unit;
 
-echo print_r($time_array);
-
 
 //parses everything that is defined in the regex array
-function wpdrs_parser( $line, $regex_array){
+private function wpdrs_parser( $line, $regex_array){
   $matches;
   $results = array();
   foreach($regex_array as $key => $exp){
