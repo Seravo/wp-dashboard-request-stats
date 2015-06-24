@@ -165,7 +165,7 @@ class dashboard_request_stats{
     $log_files = glob( $log_location . $log_file ); // all available logfiles, including gzipped ones
     $amount = self::DEFAULT_AMOUNT;
     
-    //if the requested amount of days differs from default
+    //if a certain amount is requested
     if( isset($_GET['amount']) ){
       $amount = $_GET['amount'];
     }
@@ -182,9 +182,14 @@ class dashboard_request_stats{
 
   private function clean_array( $array ){
   
+    if(!is_array($array)){
+      return false;
+    }
+
     $temp_array = array();
     $temp_array2 = array();
   
+    
     //get a list of unique dates
     for( $x = 0; $x < count($array) ; $x++ ){
       $temp_array[]= $array[$x]->time;
