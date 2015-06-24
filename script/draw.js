@@ -133,7 +133,7 @@ $( document ).ready(function(){
       barAvg = countAvg(barValue);
       lineAvg = Math.round(countAvg(lineValue));
       $("#lineChartAvg").text('Number of requests / ' + amount +' days | ( Average: ' + lineAvg + ' )');
-      $("#barChartAvg").text('Average response time per ' + amount + ' days | ( ' + amount + ' days average: ' + barAvg.toFixed(3) + 's )');
+      $("#barChartAvg").text('Average response time / ' + amount + ' days | ( ' + amount + ' days average: ' + barAvg.toFixed(3) + 's )');
     
     });
   }
