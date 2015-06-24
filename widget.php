@@ -2,11 +2,11 @@
 <div class="wpdrsContainer">
 
     
-    <div id="lineChartCont"><canvas id="lineChart"></canvas></div>
-    <div id="lineChartAvg">Number of requests / 7 days ( 7 days average X )</div>
+    <div id="requestChartCont"><canvas id="requestChart"></canvas></div>
+    <div id="requestChartAvg">Number of requests / 7 days ( 7 days average X )</div>
    
-    <div id="barChartCont"><canvas id="barChart"></canvas></div>
-    <div id="barChartAvg">Average response time / 7 day ( 7 days average X s)"</div>
+    <div id="responseChartCont"><canvas id="responseChart"></canvas></div>
+    <div id="responseChartAvg">Average response time / 7 day ( 7 days average X s)"</div>
     <div id="buttonRow">
       <div class="submit-button">
         <input id="btnSubmit1" type="submit" value="3 Days" />

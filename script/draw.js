@@ -3,18 +3,18 @@ $( document ).ready(function(){
   
   //values and labels for charts
   var chartLabel = [];
-  var lineValue = [];
-  var barValue = [];
+  var requestValue = [];
+  var responseValue = [];
   //ajax-options
   var ajaxData = {'action': 'get_chart_data'}; 
   //chart.js 
-  var lineCanvas =  $("#lineChart").get(0);
-  var barCanvas = $("#barChart").get(0);
-  var lineCtx = lineCanvas.getContext("2d");
-  var barCtx = barCanvas.getContext("2d");
-  var lineData;
-  var barData;
-  var myLineChart;
+  var requestCanvas =  $("#requestChart").get(0);
+  var responseCanvas = $("#responseChart").get(0);
+  var requestCtx = requestCanvas.getContext("2d");
+  var responseCtx = responseCanvas.getContext("2d");
+  var responseData;
+  var requestData;
+  var requestChart;
   
   Chart.defaults.global.responsive = true;
   
@@ -22,11 +22,11 @@ $( document ).ready(function(){
   $.getJSON(ajaxurl, ajaxData, function(json){
     $.each(json, function (i,value){
       chartLabel.push(value.time);
-      lineValue.push(value.request_count);
-      barValue.push(value.avg_resp);
+      requestValue.push(value.request_count);
+      responseValue.push(value.avg_resp);
     });
     //define chart specific stuff here
-    lineData = {
+    requestData = {
       labels: chartLabel,
       datasets: [
         {
@@ -37,12 +37,12 @@ $( document ).ready(function(){
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(40,43,42,1)",
-            data: lineValue
+            data: requestValue
         }
       ]
     };
     
-    barData = {
+    responseData = {
       labels: chartLabel,
       datasets: [{
             //label: "Responsetimes (in seconds)",
@@ -50,19 +50,19 @@ $( document ).ready(function(){
             strokeColor: "rgba(40,43,42,1)",
             highlightFill: "rgba(40,43,42,1)",
             highlightStroke: "rgba(40,43,42,1)",
-            data: barValue
+            data: responseValue
       }]
     };
     
     //draw charts with supplied data
-    myLineChart = new Chart(lineCtx).Line(lineData,{bezierCurve:false,pointDot:false});
-    myBarChart = new Chart(barCtx).Bar(barData);
+    requestChart = new Chart(requestCtx).Line(requestData,{bezierCurve:false,pointDot:false});
+    responseChart = new Chart(responseCtx).Line(responseData,{bezierCurve:false,pointDot:false});
     
     //calculate and show the averages of received data
-    barAvg = countAvg(barValue);
-    lineAvg = Math.round(countAvg(lineValue));
-    $("#lineChartAvg").text('Number of requests / 7 days | ( Average: ' + lineAvg + ' )');
-    $("#barChartAvg").text('Average response time / 7 days | ( 7 days average: ' + barAvg.toFixed(3) + 's )');
+    responseAvg = countAvg(responseValue);
+    requestAvg = Math.round(countAvg(requestValue));
+    $("#requestChartAvg").text('Number of requests / 7 days | ( Average: ' + requestAvg + ' )');
+    $("#responseChartAvg").text('Average response time / 7 days | ( 7 days average: ' + responseAvg.toFixed(3) + 's )');
   });
   
   //button functionality
@@ -82,25 +82,25 @@ $( document ).ready(function(){
     ajaxData = {'action': 'get_chart_data','amount' : amount}; 
     
     //destroy the charts and clear canvases for updated values
-    myLineChart.destroy();
-    myBarChart.destroy();
-    lineCtx.clearRect(0, 0, barCanvas.width, barCanvas.height);
-    barCtx.clearRect(0, 0, barCanvas.width, barCanvas.height);
+    requestChart.destroy();
+    responseChart.destroy();
+    requestCtx.clearRect(0, 0, requestCanvas.width, requestCanvas.height);
+    responseCtx.clearRect(0, 0, responseCanvas.width, responseCanvas.height);
     
     //clear old data
     chartLabel.length = 0;
-    lineValue.length = 0;
-    barValue.length = 0;
+    requestValue.length = 0;
+    responseValue.length = 0;
     
     //fetch the wanted amount of data
     $.getJSON(ajaxurl, ajaxData, function(json){
       $.each(json, function (i,value){
         chartLabel.push(value.time);
-        lineValue.push(value.request_count);
-        barValue.push(value.avg_resp);
+        requestValue.push(value.request_count);
+        responseValue.push(value.avg_resp);
       });
       
-      barData = {
+      responseData = {
       labels: chartLabel,
       datasets: [{
             //label: "Responsetimes (in seconds)",
@@ -108,11 +108,11 @@ $( document ).ready(function(){
             strokeColor: "rgba(40,43,42,1)",
             highlightFill: "rgba(40,43,42,1)",
             highlightStroke: "rgba(40,43,42,1)",
-            data: barValue
+            data: responseValue
       }]
       };
     
-      lineData = {
+      requestData = {
       labels: chartLabel,
       datasets: [
         {
@@ -123,17 +123,17 @@ $( document ).ready(function(){
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(40,43,42,1)",
-            data: lineValue
+            data: requestValue
         }
         ]};
       
-      myLineChart = new Chart(lineCtx).Line(lineData,{bezierCurve:false,pointDot:false});
-      myBarChart = new Chart(barCtx).Bar(barData);
+      requestChart = new Chart(requestCtx).Line(requestData,{bezierCurve:false,pointDot:false});
+      responseChart = new Chart(responseCtx).Line(responseData,{bezierCurve:false,pointDot:false});
       //calculate and show the averages of received data
-      barAvg = countAvg(barValue);
-      lineAvg = Math.round(countAvg(lineValue));
-      $("#lineChartAvg").text('Number of requests / ' + amount +' days | ( Average: ' + lineAvg + ' )');
-      $("#barChartAvg").text('Average response time / ' + amount + ' days | ( ' + amount + ' days average: ' + barAvg.toFixed(3) + 's )');
+      responseAvg = countAvg(responseValue);
+      requestAvg = Math.round(countAvg(requestValue));
+      $("#requestChartAvg").text('Number of requests / ' + amount +' days | ( Average: ' + requestAvg + ' )');
+      $("#responseChartAvg").text('Average response time / ' + amount + ' days | ( ' + amount + ' days average: ' + responseAvg.toFixed(3) + 's )');
     
     });
   }
