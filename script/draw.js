@@ -55,7 +55,7 @@ $( document ).ready(function(){
     };
     
     //draw charts with supplied data
-    myLineChart = new Chart(lineCtx).Line(lineData,{bezierCurve:false});
+    myLineChart = new Chart(lineCtx).Line(lineData,{bezierCurve:false,pointDot:false});
     myBarChart = new Chart(barCtx).Bar(barData);
     
     //calculate and show the averages of received data
@@ -127,7 +127,7 @@ $( document ).ready(function(){
         }
         ]};
       
-      myLineChart = new Chart(lineCtx).Line(lineData,{bezierCurve:false});
+      myLineChart = new Chart(lineCtx).Line(lineData,{bezierCurve:false,pointDot:false});
       myBarChart = new Chart(barCtx).Bar(barData);
       //calculate and show the averages of received data
       barAvg = countAvg(barValue);
