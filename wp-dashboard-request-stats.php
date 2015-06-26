@@ -31,7 +31,7 @@ class time_data {
 
 class dashboard_request_stats{
 
-  //the default amount of days to be parsed
+  //define defaults here
   const DEFAULT_AMOUNT = 7;
   const DEFAULT_TIME_REGEX = "#[0-3][0-9]/.{3}/20[0-9]{2}#"; //regex for timestamp
   const DEFAULT_RESPONSE_REGEX = "#[0-9]+.[0-9]+$#"; //regex for responsetime
@@ -53,7 +53,9 @@ class dashboard_request_stats{
     add_action( 'wp_ajax_get_chart_data',array( $this,'get_chart_data_callback') );
   }
 
-
+  /**
+  * Load external scripts and styles
+  */
   public function init( $page_hook ) {
 
     //make sure the scripts/stylesheets are loaded only where needed
@@ -124,6 +126,7 @@ class dashboard_request_stats{
       $time_array[] = $unit;
       $unit = new time_data;
     }  
+    //one request = one line in logfile
     $unit->request_count++;
     $unit->avg_resp = $unit->avg_resp + $parsed_line['response'];
     }
@@ -135,7 +138,7 @@ class dashboard_request_stats{
 
 
   /**
-  * Fetch the chart data
+  * Fetch the chart data for ajax-calls
   */
   public function get_chart_data_callback() {
     //define logpath in wp-config
@@ -162,7 +165,7 @@ class dashboard_request_stats{
   }
 
   /**
-  * Remove duplicates and make sure the entries in the array are in proper order
+  * Remove duplicate values from an array and make sure the entries in the array are in proper order
   */
   private function clean_array( $array ){
   
@@ -215,11 +218,10 @@ class dashboard_request_stats{
   
   /**
   * Return desired amount of data specified in days
-  * Eats an array
   */
   private function get_log_data( $logfiles, $amount ){
     //$time_exp = '#[0-3][0-9]/.{3}/20[0-9]{2}#';
-    $regex_array = array('time' => self::DEFAULT_TIME_REGEX,'response'=>self::DEFAULT_RESPONSE_REGEX);
+    $regex_array = array('time' => self::DEFAULT_TIME_REGEX,'response' => self::DEFAULT_RESPONSE_REGEX);
     $temp_array = array();
     $unit_data = array();
     if( count($logfiles) == 0 ){
@@ -245,7 +247,9 @@ class dashboard_request_stats{
     return $unit_data;
   }
 
-
+  /**
+  * Parses a line with regexs defined in the $regex_array
+  */
   private function wpdrs_parser( $line, $regex_array){
     $matches;
     $results = array();
